@@ -48,5 +48,8 @@ namespace SuperKanban.Model.Entities
                 RaisePropertyChanged();
             }
         }
+
+
+        private static int a = 0;
     }
 }

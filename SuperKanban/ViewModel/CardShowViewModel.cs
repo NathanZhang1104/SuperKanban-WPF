@@ -17,12 +17,18 @@ namespace SuperKanban.ViewModel
         public ICommand AddTagCommand { get; }
         public ICommand AddSubTaskCommand { get; }
         public ICommand RunDialogCommand { get; }
+        public ICommand DeleteTagCommand { get; }
+        public ICommand DeleteSubTaskCommand { get; }
+
+
         public bool ShowV { get; set; }
         public CardShowViewModel()
         {
             AddTagCommand = new RelayCommand(AddNewTag, o => !string.IsNullOrWhiteSpace((o as TextBox).Text.ToString()));
             AddSubTaskCommand = new RelayCommand(AddSubTask, o => !string.IsNullOrWhiteSpace((o as TextBox).Text.ToString()));
             RunDialogCommand = new RelayCommand(ExecuteRunDialog, o => true);
+            DeleteTagCommand = new RelayCommand(o => card.Tags.Remove((Tag)o), o => true);
+            DeleteSubTaskCommand = new RelayCommand(o => card.SubTasks.Remove((SubTask)o), o => true);
 
 
         }

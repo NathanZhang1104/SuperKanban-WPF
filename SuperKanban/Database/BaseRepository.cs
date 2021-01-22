@@ -8,7 +8,10 @@ namespace SuperKanban.Database
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private readonly ILiteCollection<TEntity> _collection;
-
+        public int count()
+        {
+            return _collection.Count();
+        }
         public BaseRepository(ILiteDatabase database, string collection)
         {
             _collection = database.GetCollection<TEntity>(collection);

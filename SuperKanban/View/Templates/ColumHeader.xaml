@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="SuperKanban.View.Templates.ColumHeder"
+    x:Class="SuperKanban.View.Templates.ColumHeader"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Kanban="clr-namespace:Syncfusion.UI.Xaml.Kanban;assembly=Syncfusion.SfKanban.WPF"
@@ -7,17 +7,23 @@
     xmlns:local="clr-namespace:SuperKanban.View.Templates"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="userControl"
     d:DataContext="{d:DesignInstance Kanban:ColumnTag}"
     d:DesignHeight="50"
     d:DesignWidth="300"
+    Background="White"
+    DragEnter="UserControl_DragEnter"
+    DragLeave="UserControl_DragLeave"
+    Drop="ColumnHeader_Drop"
+    GiveFeedback="UserControl_GiveFeedback"
+    MouseDown="ColumnHeader_MouseDown"
+    DataContextChanged="userControl_DataContextChanged"
     mc:Ignorable="d">
     <Border
         Margin="-10"
         AllowDrop="True"
-        Background="#FFF7F9FB"
-        Drop="ColumnHeader_Drop"
-        MouseDown="ColumnHeader_MouseDown">
-        <DockPanel>
+        Background="#FFF7F9FB">
+        <DockPanel Background="White">
             <Rectangle
                 x:Name="right_r"
                 Width="3"
@@ -28,6 +34,7 @@
                 RadiusY="3"
                 Visibility="Hidden" />
             <Rectangle
+                x:Name="right_l"
                 Width="3"
                 Margin="0,15,0,10"
                 DockPanel.Dock="Left"
@@ -58,24 +65,18 @@
                         Orientation="Horizontal"
                         TickFrequency="5"
                         Value="25" />
-                    <StackPanel Orientation="Horizontal">
-
-                        <Button
-                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.MoveColumnCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}"
-                            Content="左移   " />
-                        <Button Content="最前   " />
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="右移   " />
-                        <Button Content="最后   " />
-                    </StackPanel>
-
-                    <Button Content="Can't Touch This" IsEnabled="False" />
+                    <Button Click="Button_Click_1" Content="重命名" />
+                    <!--<Button Content="折叠" Click="Button_Click"  />-->
+                    <Button
+                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.DeleteColumnCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}"
+                        Content="删除" />
 
                     <Separator />
-
+                    <Button
+                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.CopyColumnCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}"
+                        Content="复制卡片组" />
                     <Button
                         Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.AddColumnCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}"
@@ -89,7 +90,7 @@
                 Margin="5,5,5,5"
                 HorizontalAlignment="Left"
                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.AddCardCommand}"
-                CommandParameter="{Binding Header}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}"
                 Cursor="Hand"
                 DockPanel.Dock="Right"
                 Style="{StaticResource MaterialDesignIconForegroundButton}"
@@ -98,17 +99,43 @@
             </Button>
 
 
-            <Border Margin="2" CornerRadius="5">
-                <Label
-                    Height="45"
-                    Margin="3"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Content="{Binding Header}"
-                    FontFamily="Arial Black"
-                    FontSize="18"
-                    Foreground="#DD666666"
-                    ToolTip="This is an example chip" />
+            <Border
+                Margin="2"
+                d:Width="153"
+                CornerRadius="5">
+                <StackPanel>
+                    <Label
+                        x:Name="titlelabel"
+                         
+                        Height="45"
+                        Margin="3"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontFamily="Arial Black"
+                        FontSize="18"
+                        Foreground="#DD666666" >
+                        <TextBlock
+                            Text="{Binding Header}"
+                            TextTrimming="CharacterEllipsis">
+                            
+                        </TextBlock>
+                    </Label>
+                    <TextBox
+                        x:Name="titleedit"
+                        Height="45"
+                        Margin="3"
+                        MinWidth="20"
+                        KeyDown="titleedit_KeyDown"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontFamily="Arial Black"
+                        FontSize="16"
+                        Foreground="#DD666666"
+                        LostFocus="titleedit_LostFocus"
+                        MaxLength="15"
+                        Text="{Binding Header}"
+                        Visibility="Collapsed" />
+                </StackPanel>
             </Border>
             <TextBlock
                 Margin="3,0,0,0"

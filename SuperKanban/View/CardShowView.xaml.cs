@@ -20,6 +20,7 @@ namespace SuperKanban.View
     public partial class CardShowView : UserControl
     {
 
+
         public bool ShowMe
         {
             get { return (bool)GetValue(ShowMeProperty); }

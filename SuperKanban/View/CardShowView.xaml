@@ -8,6 +8,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
+     xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
     x:Name="userControl"
     d:DataContext="{d:DesignInstance viewModels:CardShowViewModel}"
     d:DesignHeight="1050"
@@ -28,6 +29,9 @@
     </UserControl.Resources>
 
     <Border MinWidth="300" Background="White">
+        <Border.Resources>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </Border.Resources>
         <DockPanel x:Name="BackContent">
             <DockPanel DockPanel.Dock="Bottom">
                 <Button
@@ -77,7 +81,7 @@
                             <ListBoxItem Content="规则" ToolTip="dwdwwdw" />
                             <ListBoxItem Content="习惯" IsEnabled="False" />
                         </ListBox>
-                        <TextBox
+                        <TextBox 
                             x:Name="AddTagTextBox"
                             Margin="5,0,5,5"
                             Padding="6,0,0,0"
@@ -86,7 +90,8 @@
                             Style="{StaticResource MaterialDesignFloatingHintTextBox}">
                             <TextBox.InputBindings>
                                 <KeyBinding
-                                    Key="Enter"
+                                    Key="Return"
+                                    
                                     Command="{Binding AddTagCommand}"
                                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
                             </TextBox.InputBindings>
@@ -100,7 +105,8 @@
                                         Margin="3"
                                         Background="#4F9F76F3"
                                         Content="{Binding Name}"
-                                        DeleteCommand=""
+                                        DeleteCommand="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:CardShowView}}, Path=DataContext.DeleteTagCommand}"
+                                        DeleteCommandParameter="{Binding}"
                                         FontSize="12"
                                         IsDeletable="True"
                                         ToolTip="This is an example chip" />
@@ -116,23 +122,34 @@
                         <ItemsControl ItemsSource="{Binding Card.SubTasks}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="5,0,5,0">
+                                    <Grid Margin="5,0,5,0" Background="White">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="37" />
                                             <ColumnDefinition Width="246*" />
                                         </Grid.ColumnDefinitions>
                                         <CheckBox
-                                            Grid.ColumnSpan="2"
+                                            Grid.Column="0"
                                             materialDesign:CheckBoxAssist.CheckBoxSize="30"
                                             Click="CheckBox_Click"
                                             IsChecked="{Binding Completed}" />
                                         <TextBox
+                                            MaxHeight="60"
                                             Grid.Column="1"
                                             Margin="0,5,5,5"
                                             AcceptsReturn="True"
                                             Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
                                             Text="{Binding Title}"
-                                            TextWrapping="NoWrap" />
+                                            TextWrapping="Wrap" />
+                                        <Button
+                                            Grid.Column="1"
+                                            Margin="0,2,5,0"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:CardShowView}}, Path=DataContext.DeleteSubTaskCommand}"
+                                            CommandParameter="{Binding}"
+                                            Content="{materialDesign:PackIcon Kind=Close}"
+                                            Style="{StaticResource MaterialDesignToolButton}"
+                                            Visibility="{Binding Path=IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

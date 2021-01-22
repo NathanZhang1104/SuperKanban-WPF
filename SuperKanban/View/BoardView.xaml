@@ -5,10 +5,13 @@
     xmlns:Kanban="clr-namespace:Syncfusion.UI.Xaml.Kanban;assembly=Syncfusion.SfKanban.WPF"
     xmlns:converters="clr-namespace:SuperKanban.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
     xmlns:entities="clr-namespace:SuperKanban.Model.Entities"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:local="clr-namespace:SuperKanban.View"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:templatesView="clr-namespace:SuperKanban.View.Templates"
     xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
     d:DataContext="{d:DesignInstance viewModels:BoardViewModel}"
     d:DesignHeight="450"
@@ -81,14 +84,19 @@
             Margin="0,0,0,0"
             AutoGenerateColumns="False"
             BorderThickness="0,0,0,0"
+            CardDragOver="sfKanban_CardDragOver"
+            CardDragStart="sfKanban_CardDragStart"
             CardTapped="SfKanban_OnCardTapped"
             ColumnMappingPath="Category"
             ColumnWidth="300"
+            DataContextChanged="sfKanban_DataContextChanged"
             DockPanel.Dock="Right"
+            GiveFeedback="sfKanban_GiveFeedback"
             ItemsSource="{Binding Board.Cards}"
             ScrollViewer.VerticalScrollBarVisibility="Auto">
 
             <Kanban:SfKanban.Resources>
+
                 <VisualBrush x:Key="columnBKbrush" Viewbox="0,0,1,1">
                     <VisualBrush.Visual>
                         <Rectangle
@@ -110,109 +118,25 @@
                     </Style.Triggers>
                 </Style>
             </Kanban:SfKanban.Resources>
-            <Kanban:KanbanColumn Title="Backlog" Categories="Backlog" />
-            <Kanban:KanbanColumn Title="To Do" Categories="To Do" />
-            <Kanban:KanbanColumn Title="In Progress" Categories="In Progress" />
-            <Kanban:KanbanColumn Title="Review" Categories="Review" />
-            <Kanban:KanbanColumn Title="Completed" Categories="Completed" />
+            <Kanban:KanbanColumnsCollection>
+                <Kanban:KanbanColumn Title="Backlog" Categories="Backlog" />
+                <Kanban:KanbanColumn Title="To Do" Categories="To Do" />
+                <Kanban:KanbanColumn Title="In Progress" Categories="In Progress" />
+                <Kanban:KanbanColumn Title="Review" Categories="Review" />
+                <Kanban:KanbanColumn Title="Completed" Categories="Completed" />
+            </Kanban:KanbanColumnsCollection>
+
+
             <Kanban:SfKanban.ColumnHeaderTemplate>
                 <DataTemplate DataType="Kanban:ColumnTag">
-                    <Border
-                        
-                        Margin="-10"
-                        AllowDrop="True"
-                        Background="#FFF7F9FB"
-                        Drop="ColumnHeader_Drop"
-                        MouseDown="ColumnHeader_MouseDown"  >
-                            <DockPanel>
-                            <Rectangle x:Name="right_r" DockPanel.Dock="Right"  Visibility="Hidden" RadiusY="3" RadiusX="3" Margin="0,15,0,10" Fill="LightPink" Width="3" />
-                            <Rectangle Visibility="Hidden" DockPanel.Dock="Left" RadiusY="3" RadiusX="3" Margin="0,15,0,10" Fill="LightPink" Width="3" />
+                    <templatesView:ColumHeader KanbanColumn="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="ColumDropIn">
+                                <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:BoardView}}, Path=DataContext.MoveColumnCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=templatesView:ColumHeader}}" />
+                            </i:EventTrigger>
 
-                            <materialDesign:PopupBox
-                                    Margin="5,5,15,5"
-                                    DockPanel.Dock="Right"
-                                    PlacementMode="BottomAndAlignRightEdges"
-                                    StaysOpen="False">
-                                    <StackPanel>
-                                        <StackPanel
-                                            Margin="10"
-                                            HorizontalAlignment="Center"
-                                            Orientation="Horizontal">
-                                            <TextBlock Margin="0,0,10,0" Text="激活" />
-                                            <ToggleButton x:Name="DarkModeToggleButton" />
-                                            <TextBlock Margin="10,0,0,0" Text="Dark" />
-                                        </StackPanel>
-
-                                        <Separator />
-                                        <Slider
-                                            Maximum="50"
-                                            Minimum="1"
-                                            Orientation="Horizontal"
-                                            TickFrequency="5"
-                                            Value="25" />
-                                        <StackPanel Orientation="Horizontal">
-
-                                            <Button
-                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.MoveColumnCommand}"
-                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}"
-                                                Content="左移   " />
-                                            <Button Content="最前   " />
-                                        </StackPanel>
-
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Content="右移   " />
-                                            <Button Content="最后   " />
-                                        </StackPanel>
-
-                                        <Button Content="Can't Touch This" IsEnabled="False" />
-
-                                        <Separator />
-
-                                        <Button
-                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.AddColumnCommand}"
-                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Kanban:KanbanColumn}}"
-                                            Content="添加卡片组" />
-
-                                    </StackPanel>
-                                </materialDesign:PopupBox>
-                                <Button
-                                    Width="34"
-                                    Height="34"
-                                    Margin="5,5,5,5"
-                                    HorizontalAlignment="Left"
-                                    Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Kanban:SfKanban}}, Path=DataContext.AddCardCommand}"
-                                    CommandParameter="{Binding Header}"
-                                    Cursor="Hand"
-                                    DockPanel.Dock="Right"
-                                    Style="{StaticResource MaterialDesignIconForegroundButton}"
-                                    ToolTip="添加卡片">
-                                    <materialDesign:PackIcon Kind="Plus" Opacity="0.8" />
-                                </Button>
-
-
-                                <Border Margin="2" CornerRadius="5">
-                                    <Label
-                                        Height="45"
-                                        Margin="3"
-                                        HorizontalContentAlignment="Center"
-                                        VerticalContentAlignment="Center"
-                                        Content="{Binding Header}"
-                                        FontFamily="Arial Black"
-                                        FontSize="18"
-                                        Foreground="#DD666666"
-                                        ToolTip="This is an example chip" />
-                                </Border>
-                                <TextBlock
-                                    Margin="3,0,0,0"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    FontFamily="DengXian"
-                                    FontSize="18"
-                                    FontWeight="Bold"
-                                    Foreground="#FFADA9A9"
-                                    Text="{Binding CardCount}" />
-                            </DockPanel>
-                    </Border>
+                        </i:Interaction.Triggers>
+                    </templatesView:ColumHeader>
                 </DataTemplate>
             </Kanban:SfKanban.ColumnHeaderTemplate>
             <Kanban:SfKanban.CardTemplate>
@@ -227,12 +151,13 @@
 
 
                         <StackPanel x:Name="FrontContent">
+
                             <DockPanel>
-                                <TextBlock
+                                <emoji:TextBlock
                                     x:Name="cardTextBlock"
                                     Margin="10,5,10,5"
-                                    Foreground="#FF727272"
-                                    Style="{DynamicResource MaterialDesignHeadline5TextBlock}"
+                                    Foreground="#FF525252"
+                                    Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
                                     Text="{Binding Title}" />
                                 <materialDesign:PopupBox
                                     x:Name="popupbox1"
@@ -312,9 +237,12 @@
                                             Height="25"
                                             Margin="3"
                                             Background="#4F9F76F3"
-                                            Content="{Binding Name}"
                                             FontSize="12"
-                                            ToolTip="This is an example chip" />
+                                            ToolTip="This is an example chip">
+                                            <emoji:TextBlock Text="{Binding Name}" />
+
+                                        </materialDesign:Chip>
+
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
 
@@ -326,11 +254,12 @@
                             </ItemsControl>
                             <TextBlock
                                 x:Name="cardTextBlock2"
-                                MaxHeight="60"
-                                Margin="10,5,10,5"
+                                MaxHeight="65"
+                                Margin="10,5,10,10"
                                 HorizontalAlignment="Left"
                                 Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                 Text="{Binding Description}"
+                                TextTrimming="CharacterEllipsis"
                                 TextWrapping="WrapWithOverflow" />
                         </StackPanel>
                     </materialDesign:Card>

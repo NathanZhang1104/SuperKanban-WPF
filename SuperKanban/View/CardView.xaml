@@ -10,6 +10,7 @@
     xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
     x:Name="userControl"
     Width="272"
+    
     d:DataContext="{d:DesignInstance viewModels:CardViewModel}"
     mc:Ignorable="d">
   

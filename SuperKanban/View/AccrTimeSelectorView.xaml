@@ -322,9 +322,10 @@
       x:Key="DataContextProxy"
       Data="{Binding}" xmlns:domain="clr-namespace:MaterialDesignDemo.Domain" />
             </DataGrid.Resources>-->
+                <!--Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"-->
+
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn
-                        Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
                         EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}"
                         ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}">
                         <DataGridCheckBoxColumn.Header>

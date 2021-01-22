@@ -11,6 +11,9 @@ using SuperKanban.Model.Entities;
 using GalaSoft.MvvmLight;
 using SuperKanban.ViewModel;
 using Syncfusion.UI.Xaml.Kanban;
+using SuperKanban.View;
+using System.Linq;
+using System.Collections.Generic;
 namespace SuperKanban.ViewModel
 {
     public class BoardViewModel : ViewModelBase
@@ -86,10 +89,14 @@ namespace SuperKanban.ViewModel
         public ICommand SaveBoardCommand { get; }
         public ICommand AddColumnCommand { get; }
         public ICommand MoveColumnCommand { get; }
+        public ICommand DeleteColumnCommand { get; }
+        public ICommand CopyColumnCommand { get; }
+
 
         public BoardViewModel()
         {
             Board = new Board();
+            s_AddColumnCount = randomer.NextDouble();
             CloseBoardCommand = new RelayCommand(CloseBoardShowMain, o => true);
             AddCardCommand = new RelayCommand(AddCard, o => true);
             //AddTagCommand = new RelayCommand(AddNewTag, o => !string.IsNullOrWhiteSpace(o.ToString()));
@@ -101,6 +108,9 @@ namespace SuperKanban.ViewModel
             CloseTaskViewCommand = new RelayCommand(o => TaskViewWidth = 0, o => true);
             AddColumnCommand = new RelayCommand(AddColumn, o => true);
             MoveColumnCommand = new RelayCommand(MoveColumn, o => true);
+            CopyColumnCommand = new RelayCommand(CopyColumn, o => true);
+            DeleteColumnCommand = new RelayCommand(DeleteColumn, o => true);
+    
 
 
         }
@@ -145,7 +155,7 @@ namespace SuperKanban.ViewModel
                 newcard = new Card
                 {
                     BoardId = Board.Id,
-                    Category = (string)parameter,
+                    Category = (string)(parameter as KanbanColumn).Categories,
                     CreatedAt = DateTime.Now,
                     Description = "",
                     Title = "",
@@ -164,28 +174,98 @@ namespace SuperKanban.ViewModel
                 Board.Cards.Add(newcard);
 
             }
+            BoardWindow.CardShowView.ShowMe = true;
             if (string.IsNullOrWhiteSpace(BoardWindow.CardShowView.title_text.Text))
             {
                 BoardWindow.CardShowView.title_text.Focus();
             }
         }
 
+
         public void SaveBoard(object parameter)
         {
             //App.UnitOfWork.Boards.Update(Board);
         }
 
+        private double s_AddColumnCount;
+        private Random randomer = new Random();
+
         private void AddColumn(object parameter) {
-            var cur_index = BoardWindow.sfKanban.Columns.IndexOf(parameter as KanbanColumn);
-            BoardWindow.sfKanban.Columns.Insert(cur_index+1,new KanbanColumn() { Title = "untitle", Categories = "dwdw" }); ;
+            s_AddColumnCount++;
+            var cur_index = BoardWindow.sfKanban.Columns.IndexOf((parameter as KanbanColumn));
+            BoardWindow.sfKanban.Columns.Insert(cur_index+1,new KanbanColumn() { Title = "", Categories = s_AddColumnCount.ToString()});
+            Board.BoardColumns.Insert(cur_index + 1, new BoardColumn(  "", s_AddColumnCount.ToString()));
 
 
         }
+        private void CopyColumn(object parameter)
+        {
+            var colum = parameter as KanbanColumn;
+            s_AddColumnCount++;
+            var cur_index = BoardWindow.sfKanban.Columns.IndexOf(colum);
+            BoardWindow.sfKanban.Columns.Insert(cur_index + 1, new KanbanColumn() { Title = colum.Title, Categories = s_AddColumnCount.ToString() });
+            Board.BoardColumns.Insert(cur_index + 1, new BoardColumn(colum.Title as string, s_AddColumnCount.ToString()));
+            var toRemove = Board.Cards.Where(x => x.Category == colum.Categories).ToList();
 
+            foreach (var item in toRemove)
+            {
+                Card newcard = DeepCopier.Copy(item);
+                newcard.Category = s_AddColumnCount.ToString();
+
+                Board.Cards.Add(newcard);
+            }
+
+        }
+        private void DeleteColumn(object parameter)
+        {
+            var colum = parameter as KanbanColumn;
+            var toRemove = Board.Cards.Where(x => x.Category == colum.Categories).ToList();
+            foreach (var item in toRemove)
+                Board.Cards.Remove(item);
+            BoardWindow.sfKanban.Columns.Remove(colum);
+            Board.BoardColumns.RemoveAt(BoardWindow.sfKanban.Columns.IndexOf(colum));
+        }
         private void MoveColumn(object parameter)
         {
-            var cur_index=BoardWindow.sfKanban.Columns.IndexOf(parameter as KanbanColumn);
-            BoardWindow.sfKanban.Columns.Move(cur_index, cur_index + 1);
+            var header = parameter as  View.Templates.ColumHeader;
+            var drop_index=BoardWindow.sfKanban.Columns.IndexOf(header.KanbanColumn);
+            var drag_index = BoardWindow.sfKanban.Columns.IndexOf(header.Dropin_KanbanColumn);
+            if (drop_index == drag_index) return;
+            else if (drag_index < drop_index)
+            {
+                if (header.left)
+                {
+                    drop_index -= 1;
+                }
+
+            }
+            else if(drag_index > drop_index)
+            {
+                if (!header.left)
+                {
+                    drop_index += 1;
+                }
+
+            }
+
+            if (drop_index == drag_index) return;
+            //BoardWindow.sfKanban.Columns.Add(null);
+            if (drop_index< BoardWindow.sfKanban.Columns.Count)
+            {
+                BoardWindow.sfKanban.Columns.Move(drag_index, drop_index);
+                Board.BoardColumns.Move(drag_index, drop_index);
+
+            }
+            else
+            {
+                for (int i = 0; i < drop_index-1-drag_index; i++)
+                {
+                    BoardWindow.sfKanban.Columns.Move(drop_index-1, drag_index);
+                    Board.BoardColumns.Move(drop_index - 1, drag_index);
+
+                }
+            }
+            //BoardWindow.sfKanban.Columns.RemoveAt(BoardWindow.sfKanban.Columns.Count - 1);
 
         }
     }

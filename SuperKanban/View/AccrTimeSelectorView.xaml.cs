@@ -50,9 +50,10 @@ namespace SuperKanban.View
         private void ItemsControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Canvas el = (Canvas)sender;
+     
             el.CaptureMouse();
             if (CurrentType == LimitType.Allow) return;
-            Point p = Mouse.GetPosition(e.Source as FrameworkElement);//WPF方法
+            Point p = Mouse.GetPosition(el);//WPF方法
             last_down_point = p;
             ATSViewMoel.CurrentTimeRuleOne = new TimeRuleOne();
             ATSViewMoel.CurrentTimeRuleOne.LimitType = CurrentType;
