@@ -180,7 +180,7 @@
                 ToolTip="时间设置"
                 ToolTipService.HorizontalOffset="50"
                 ToolTipService.VerticalOffset="-20">
-                <local:AccrTimeSelectorView></local:AccrTimeSelectorView>
+                <local:AccrTimeSelectorView DataContext="{Binding AccrTimeSelectorViewModel}"></local:AccrTimeSelectorView>
 
             </TabItem>
         </TabControl>

@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="DeepCopy" Version="1.0.3" />
     <PackageReference Include="Emoji.Wpf" Version="0.1.5" />
+    <PackageReference Include="Lierda.WPFHelper" Version="1.0.3" />
     <PackageReference Include="LiteDB" Version="5.0.9" />
     <PackageReference Include="MaterialDesignColors" Version="1.2.7" />
     <PackageReference Include="MaterialDesignThemes" Version="3.2.0" />

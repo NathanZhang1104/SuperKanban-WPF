@@ -142,67 +142,30 @@
             <Kanban:SfKanban.CardTemplate>
                 <!--  materialDesign:ShadowAssist.ShadowDepth="{Binding IsSelected, Converter={StaticResource SelectedToDepthConverter}}"  -->
                 <DataTemplate>
-                    <materialDesign:Card
-                        x:Name="curcard"
+                    <Border
                         Margin="10,10,10,5"
-                        materialDesign:ShadowAssist.ShadowDepth="Depth0"
                         Background="White"
-                        UniformCornerRadius="10">
+                        CornerRadius="10">
 
 
-                        <StackPanel x:Name="FrontContent">
+                        <StackPanel>
 
                             <DockPanel>
                                 <emoji:TextBlock
-                                    x:Name="cardTextBlock"
                                     Margin="10,5,10,5"
                                     Foreground="#FF525252"
                                     Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
                                     Text="{Binding Title}" />
                                 <materialDesign:PopupBox
-                                    x:Name="popupbox1"
                                     Margin="5,5,8,5"
                                     HorizontalAlignment="Right"
                                     DockPanel.Dock="Right"
                                     Foreground="#FF7A7A7A"
                                     PlacementMode="BottomAndAlignLeftEdges"
-                                    StaysOpen="False">
-                                    <materialDesign:PopupBox.Style>
-                                        <Style TargetType="{x:Type materialDesign:PopupBox}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=curcard, Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ElementName=curcard, Path=IsMouseOver}" Value="False">
-                                                    <Setter Property="Visibility" Value="Hidden" />
-
-                                                </DataTrigger>
-
-                                            </Style.Triggers>
-                                        </Style>
-                                    </materialDesign:PopupBox.Style>
+                                    StaysOpen="False"
+                                    Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
+                              
                                     <StackPanel>
-                                        <StackPanel
-                                            Margin="10"
-                                            HorizontalAlignment="Center"
-                                            Orientation="Horizontal">
-                                            <TextBlock Margin="0,0,10,0" Text="激活" />
-                                            <ToggleButton x:Name="DarkModeToggleButton" />
-                                            <TextBlock Margin="10,0,0,0" Text="Dark" />
-                                        </StackPanel>
-
-                                        <!--<Separator />
-
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Content="左移   " />
-                                            <Button Content="最前   " />
-                                        </StackPanel>
-
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Content="右移   " />
-                                            <Button Content="最后   " />
-                                        </StackPanel>
-                                        <Separator />-->
                                         <Button
                                             Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:BoardView}}, Path=DataContext.AddCardCommand}"
                                             CommandParameter="{Binding}"
@@ -220,15 +183,14 @@
                                 Visibility="{Binding SubTasks.Count, Converter={StaticResource FromNumberToVisibilityConverter}}">
                                 <materialDesign:PackIcon
                                     Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                    Height="{Binding ActualHeight, ElementName=label1, Mode=OneWay}"
+                                    Height="32"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Foreground="#FF2F2F2F"
                                     Kind="CheckboxMarkedCircleOutline" />
-                                <Label x:Name="label1" Content="{Binding SubTasks, Converter={StaticResource ToStringConverter}, Mode=TwoWay}" />
+                                <Label  Content="{Binding SubTasks, Converter={StaticResource ToStringConverter}, Mode=TwoWay}" />
                             </StackPanel>
                             <ItemsControl
-                                x:Name="cardItemsControl"
                                 Margin="5"
                                 ItemsSource="{Binding Tags}">
                                 <ItemsControl.ItemTemplate>
@@ -253,7 +215,6 @@
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
                             <TextBlock
-                                x:Name="cardTextBlock2"
                                 MaxHeight="65"
                                 Margin="10,5,10,10"
                                 HorizontalAlignment="Left"
@@ -262,7 +223,7 @@
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="WrapWithOverflow" />
                         </StackPanel>
-                    </materialDesign:Card>
+                    </Border>
                 </DataTemplate>
             </Kanban:SfKanban.CardTemplate>
 

@@ -12,7 +12,7 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <DockPanel Height="30" Background="#00000000">
-        <StackPanel VerticalAlignment="Center" DockPanel.Dock="Left">
+        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" DockPanel.Dock="Left">
             <emoji:TextBlock
                 x:Name="titlelabel"
                 HorizontalAlignment="Left"
@@ -36,20 +36,22 @@
         </StackPanel>
 
         <materialDesign:PopupBox
-            Margin="0,0,10,0"
+            Margin="0,0,14,0"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             DockPanel.Dock="Right"
             Foreground="#FF656565"
             PlacementMode="BottomAndAlignRightEdges"
             StaysOpen="False"
-            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
+            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel>
-                <Separator />
                 <Button Click="Button_Click" Content="重命名" />
                 <Button Content="Can't Touch This" IsEnabled="False" />
                 <Separator />
-                <Button Content="Goodbye" />
+                <Button
+                    Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, Path=DataContext.RemoveBoardCommand}"
+                    CommandParameter="{Binding}"
+                    Content="删除" />
             </StackPanel>
         </materialDesign:PopupBox>
     </DockPanel>

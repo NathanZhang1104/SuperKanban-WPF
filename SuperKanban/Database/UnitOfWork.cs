@@ -23,6 +23,7 @@ namespace SuperKanban.Database
             //    BoardTreeViewModels.Insert(new BoardTreeViewModel());
             //}
             Board a = new Board() { Name = "番茄看板", Category = "我的看板" };
+            a.BoardColumns.Add(new BoardColumn("2323", "212131"));
             Boards = new BaseRepository<Board>(_database, "Boards");
             //Boards.Insert(a);
         }

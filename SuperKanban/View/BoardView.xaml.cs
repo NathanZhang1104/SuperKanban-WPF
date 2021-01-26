@@ -16,6 +16,8 @@ using Syncfusion.UI.Xaml.Kanban;
 using SuperKanban.View.Templates;
 using System.Runtime.InteropServices;
 using SuperKanban.ViewModel;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace SuperKanban.View
 {
@@ -28,15 +30,17 @@ namespace SuperKanban.View
         {
             InitializeComponent();
             (DataContext as BoardViewModel).BoardWindow = this;
+            timer.Interval = TimeSpan.FromMilliseconds(10);
+            timer.Tick += new EventHandler(sortcol);  //你的事件
         }
         private void SfKanban_OnCardTapped(object sender, KanbanTappedEventArgs e)
         {
 
             var viewModel = (BoardViewModel)DataContext;
 
-            viewModel.SelectedCard= (Card)e.SelectedCard.Content;
+            viewModel.SelectedCard = (Card)e.SelectedCard.Content;
             ClearTaskTagEntry();
-            CardShowView.ShowMe=true;
+            CardShowView.ShowMe = true;
             if (string.IsNullOrWhiteSpace(CardShowView.title_text.Text))
             {
                 CardShowView.title_text.Focus();
@@ -89,8 +93,9 @@ namespace SuperKanban.View
 
         [DllImport("user32.dll")]
         static extern void GetCursorPos(ref PInPoint p);
-        private bool carddrag  = false;
-        private void sfKanban_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
+        private bool carddrag = false;
+        private void sfKanban_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
 
             if (carddrag) return;
             var items = (SfKanban)sender;
@@ -101,7 +106,7 @@ namespace SuperKanban.View
                 GetCursorPos(ref pointRef);
                 Point cur_drag_point = new Point(pointRef.X, pointRef.Y);
                 Point ab_cur_drag_point = items.PointFromScreen(cur_drag_point);
-                if( items.ActualWidth- ab_cur_drag_point.X < 200)
+                if (items.ActualWidth - ab_cur_drag_point.X < 200)
                 {
                     scroll.LineRight();
                 }
@@ -134,10 +139,45 @@ namespace SuperKanban.View
             carddrag = false;
 
         }
+        private DispatcherTimer timer = new DispatcherTimer();
 
         private void sfKanban_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            ;
+            var boardViewModel = DataContext as BoardViewModel;
+            boardViewModel.RaisePropertyChanged("Board");
+            boardViewModel.BoardWindow = this;
+            sfKanban.Columns.Clear();
+            foreach (var colitem in boardViewModel.Board.BoardColumns)
+            {
+                var cur_col = new KanbanColumn() { Title = colitem.Title, Categories = colitem.Category };
+                sfKanban.Columns.Add(cur_col);
+
+
+
+            }
+            timer.Start();
+
+        }
+        private void sortcol(object sender, EventArgs e)
+        {
+            var boardViewModel = DataContext as BoardViewModel;
+
+            for (int i = 0; i < sfKanban.Columns.Count; i++)
+            {
+                for (int j = 0; j < sfKanban.Columns[i].Cards.Count; j++)
+                {
+
+                    sfKanban.Columns[i].Cards[j].Content = 
+                        boardViewModel.Board.Cards[boardViewModel.Board.BoardColumns[i].CardIndexList[j]];
+                }
+            }
+         
+           
+            timer.Stop();
+
+        }
+
+
         }
     }
-}
+    

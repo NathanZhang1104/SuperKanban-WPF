@@ -8,13 +8,24 @@ namespace SuperKanban.Model.Entities
     public struct BoardColumn{
         public string Title { get; set; }
         public string Category { get; set; }
+        public List<int> CardIndexList { get; set; }
 
-        public BoardColumn(KanbanColumn kanbanColumn) 
+        public BoardColumn(KanbanColumn kanbanColumn,Board board) 
         {
+            CardIndexList = new List<int>();
+
             if (kanbanColumn != null)
             {
                 Title = kanbanColumn.Title.ToString();
                 Category = kanbanColumn.Categories as string;
+                foreach (var item in kanbanColumn.Cards)
+                {
+                   var card= item.Content as Card;
+                    
+                    CardIndexList.Add(board.Cards.IndexOf(card));
+
+                }
+
             }
             else
             {
@@ -28,14 +39,13 @@ namespace SuperKanban.Model.Entities
         {
             this.Title = name;
             Category = id;
+            CardIndexList = new List<int>();
         }
     }
     public class Board
     {
         public Board()
         {
-            BoardColumn bc = new BoardColumn() { Title = "todo", Category = "12123" };
-            BoardColumns.Add(bc);
         }
 
         public int Id { get; set; }

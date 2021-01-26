@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using SuperKanban.Model.Entities;
 using SuperKanban.ViewModel;
 using Syncfusion.UI.Xaml.Kanban;
+using SuperKanban.View;
 
 namespace SuperKanban
 {
@@ -36,23 +37,17 @@ namespace SuperKanban
 
         private void listbox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            BoardViewModel boardViewModel = mainboard.DataContext as BoardViewModel;
-            if (boardViewModel.Board != null)
-            {
-                boardViewModel.Board.BoardColumns.Clear();
-                foreach (var item in mainboard.sfKanban.Columns)
-                {
-                    boardViewModel.Board.BoardColumns.Add(new BoardColumn(item));
-                }
-                App.UnitOfWork.Boards.Update(boardViewModel.Board);
+            saveboard();
+            //BoardViewModel boardViewModel = mainboard.DataContext as BoardViewModel;
 
-            }
-            boardViewModel.Board = listbox1.SelectedItem as Board;
-            mainboard.sfKanban.Columns.Clear();
-            foreach (var item in boardViewModel.Board.BoardColumns)
-            {
-                mainboard.sfKanban.Columns.Add(new KanbanColumn() { Title = item.Title, Categories = item.Category });
-            }
+            //boardViewModel.Board = listbox1.SelectedItem as Board;
+            //canvas.RegisterName("newButton", btn);//注册名字，以便以后使用  
+            Board curboard = listbox1.SelectedItem as Board;
+            BoardViewModel curbdvm = new BoardViewModel() { Board = curboard };
+            //mainboard = new BoardView();
+            mainboard.DataContext = curbdvm;
+
+
         }
 
         private void listbox1_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -65,13 +60,23 @@ namespace SuperKanban
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            BoardViewModel boardViewModel = mainboard.DataContext as BoardViewModel;
+            saveboard();
 
-            App.UnitOfWork.Boards.Update(boardViewModel.Board);
-            foreach (var item in mainboard.sfKanban.Columns)
+        }
+
+        private void saveboard()
+        {
+            BoardViewModel boardViewModel = mainboard.DataContext as BoardViewModel;
+            if (boardViewModel.Board != null)
             {
                 boardViewModel.Board.BoardColumns.Clear();
-                boardViewModel.Board.BoardColumns.Add(new BoardColumn(item));
+                foreach (var item in mainboard.sfKanban.Columns)
+                {
+                    boardViewModel.Board.BoardColumns.Add(new BoardColumn(item, boardViewModel.Board));
+                }
+                ;
+                App.UnitOfWork.Boards.Update(boardViewModel.Board);
+                ;
             }
         }
 

@@ -60,7 +60,10 @@ namespace SuperKanban.View.Templates
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            titlelabel.Visibility = Visibility.Collapsed;
 
+            titleedit.Visibility = Visibility.Visible;
+            titleedit.Focus();
         }
     }
 

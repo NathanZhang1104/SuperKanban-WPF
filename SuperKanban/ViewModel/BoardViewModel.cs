@@ -40,9 +40,9 @@ namespace SuperKanban.ViewModel
             set
             {
                 CardShowViewModel = new CardShowViewModel() { Card = value };
-                _selectedCard.IsSelected = false;
+                //_selectedCard.IsSelected = false;
                 _selectedCard = value;
-                _selectedCard.IsSelected = true;
+                //_selectedCard.IsSelected = true;
 
                 RaisePropertyChanged();
                 RaisePropertyChanged("CardShowViewModel");
@@ -129,6 +129,7 @@ namespace SuperKanban.ViewModel
             }
             else
             {
+                var card = parameter as Card;
                 Board.Cards.Remove(parameter as Card);
 
             }
@@ -222,8 +223,8 @@ namespace SuperKanban.ViewModel
             var toRemove = Board.Cards.Where(x => x.Category == colum.Categories).ToList();
             foreach (var item in toRemove)
                 Board.Cards.Remove(item);
-            BoardWindow.sfKanban.Columns.Remove(colum);
             Board.BoardColumns.RemoveAt(BoardWindow.sfKanban.Columns.IndexOf(colum));
+            BoardWindow.sfKanban.Columns.Remove(colum);
         }
         private void MoveColumn(object parameter)
         {

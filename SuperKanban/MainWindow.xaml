@@ -49,7 +49,7 @@
                         x:Name="boardtreegrid"
                         MinWidth="220"
                         DockPanel.Dock="Top">
-                   
+
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
@@ -79,7 +79,7 @@
                                                                         Height="30"
                                                                         Background="#00000000"
                                                                         Orientation="Horizontal">
-                                                                        <StackPanel>
+                                                                        <StackPanel VerticalAlignment="Center">
                                                                             <emoji:TextBlock
                                                                                 HorizontalAlignment="Left"
                                                                                 VerticalAlignment="Center"
@@ -88,11 +88,11 @@
                                                                                 Text="{Binding Name}" />
                                                                         </StackPanel>
                                                                         <materialDesign:PopupBox
-                                                                            Margin="0,0,10,0"
+                                                                            Margin="55,0,10,0"
                                                                             HorizontalAlignment="Right"
                                                                             VerticalAlignment="Center"
                                                                             DockPanel.Dock="Right"
-                                                                            Foreground="#FF656565"
+                                                                            Foreground="#dd656565"
                                                                             PlacementMode="BottomAndAlignRightEdges"
                                                                             StaysOpen="False"
                                                                             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -135,7 +135,7 @@
             </materialDesign:DrawerHost.LeftDrawerContent>
 
 
-            <DockPanel Background="#FFB6A7A7">
+            <DockPanel x:Name="boarddock" Background="#FFB6A7A7">
                 <materialDesign:ColorZone
                     Padding="8"
                     materialDesign:ShadowAssist.ShadowDepth="Depth2"

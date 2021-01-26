@@ -40,7 +40,7 @@ namespace SuperKanban.ViewModel
 
         private void AddBoard(object parameter)
         {
-            Board b1 = new Board() { Name ="dwqdq",Category= parameter  as string};
+            Board b1 = new Board() { Name ="未命名看板",Category= parameter  as string};
             Boards.Add(b1);
             App.UnitOfWork.Boards.Insert(b1);
         }
