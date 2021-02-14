@@ -1,0 +1,214 @@
+﻿<UserControl
+    x:Class="SuperKanban.View.CardView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:convertors="clr-namespace:SuperKanban.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SuperKanban.View"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
+    x:Name="userControl"
+    Width="272"
+    d:DataContext="{d:DesignInstance viewModels:CardViewModel}"
+    mc:Ignorable="d">
+  
+    <materialDesign:Flipper
+        x:Name="Flipper"
+        Height="{Binding ActualHeight, ElementName=FrontContent, Mode=Default}"
+        materialDesign:ShadowAssist.ShadowDepth="Depth0"
+        IsFlippedChanged="Flipper_IsFlippedChanged"
+        IsManipulationEnabled="True">
+        <materialDesign:Flipper.Style>
+            <Style BasedOn="{StaticResource MaterialDesignCardFlipper}" TargetType="materialDesign:Flipper">
+                <Style.Triggers>
+                    <Trigger Property="IsFlipped" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="(Height)"
+                                        To="300"
+                                        Duration="0:0:0.2" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="(Height)" Duration="0:0:0.1" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+
+                    </Trigger>
+
+                </Style.Triggers>
+            </Style>
+        </materialDesign:Flipper.Style>
+        <materialDesign:Flipper.FrontContent>
+            <StackPanel x:Name="FrontContent">
+
+                <StackPanel.Resources>
+                    <convertors:AddMultiValueConverter x:Key="AddMultiValueConverter" />
+                </StackPanel.Resources>
+                <StackPanel.Height>
+                    <MultiBinding Converter="{StaticResource AddMultiValueConverter}">
+                        <Binding ElementName="cardTextBlock" Path="ActualHeight" />
+                        <Binding ElementName="cardItemsControl" Path="ActualHeight" />
+                    </MultiBinding>
+                </StackPanel.Height>
+
+                <TextBlock
+                    x:Name="cardTextBlock"
+                    Margin="10,5,10,5"
+                    Style="{DynamicResource MaterialDesignHeadline5TextBlock}"
+                    Text="{Binding Card.Title}" />
+                <ItemsControl
+                    x:Name="cardItemsControl"
+                    Margin="5"
+                    ItemsSource="{Binding Card.Tags}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <materialDesign:Chip
+                                Height="25"
+                                Margin="3"
+                                Content="{Binding Name}"
+                                FontSize="12"
+                                ToolTip="This is an example chip" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock
+                    x:Name="cardTextBlock2"
+                    MaxHeight="60"
+                    Margin="10,5,10,5"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                    Text="{Binding Card.Description}"
+                    TextWrapping="WrapWithOverflow" />
+                <Button
+                    Margin="0,4,0,0"
+                    Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                    Content="EDIT"
+                    Style="{StaticResource MaterialDesignFlatButton}" />
+            </StackPanel>
+        </materialDesign:Flipper.FrontContent>
+        <materialDesign:Flipper.BackContent>
+            <StackPanel x:Name="BackContent">
+                <StackPanel Background="White" Orientation="Horizontal">
+                    <Button
+                        HorizontalAlignment="Left"
+                        Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                        Style="{StaticResource MaterialDesignToolForegroundButton}">
+                        <materialDesign:PackIcon HorizontalAlignment="Right" Kind="ArrowLeft" />
+                    </Button>
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="EDIT USER" />
+                </StackPanel>
+                <ScrollViewer Height="265" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer.Resources>
+                        <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar">
+                            <Setter Property="MinWidth" Value="4" />
+                            <Setter Property="Width" Value="4" />
+                            <Setter Property="Margin" Value="-2,0,1,0" />
+
+                        </Style>
+                    </ScrollViewer.Resources>
+
+                    <Border Background="White" MouseLeftButtonDown="StackPanel_MouseDown">
+                        <StackPanel>
+                            <ListBox Margin="5,5,5,5" Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
+                                <ListBoxItem Content="清单" IsSelected="True" />
+                                <ListBoxItem Content="附件" />
+                                <ListBoxItem Content="规则" ToolTip="dwdwwdw" />
+                                <ListBoxItem Content="习惯" IsEnabled="False" />
+                            </ListBox>
+                            <TextBox
+                                Margin="5,0,5,0"
+                                materialDesign:HintAssist.Hint="Title"
+                                FontSize="16"
+                                Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                                Text="{Binding Card.Title}" />
+                            <TextBox
+                                x:Name="AddTagTextBox"
+                                Margin="5,0,5,5"
+                                Padding="6,0,0,0"
+                                VerticalAlignment="Center"
+                                materialDesign:HintAssist.Hint="add tag"
+                                Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding
+                                        Key="Enter"
+                                        Command="{Binding AddTagCommand}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+
+                            <ItemsControl Margin="5" ItemsSource="{Binding Card.Tags}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:Chip
+                                            Height="25"
+                                            Margin="3"
+                                            Content="{Binding Name}"
+                                            DeleteCommand=""
+                                            FontSize="12"
+                                            IsDeletable="True"
+                                            ToolTip="This is an example chip" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+
+
+                            <TextBox
+                                Height="100"
+                                Margin="5,12,5,0"
+                                VerticalAlignment="Top"
+                                materialDesign:HintAssist.Hint="Description"
+                                AcceptsReturn="True"
+                                FontSize="12"
+                                Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                                Text="{Binding Card.Description}"
+                                TextWrapping="Wrap"
+                                VerticalScrollBarVisibility="Auto" />
+                            <StackPanel
+                                Margin="0,12,10,20"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center" Text="Email Contact" />
+                                <ToggleButton Margin="8,0,0,0" />
+                            </StackPanel>
+                            <StackPanel
+                                Margin="0,12,10,20"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center" Text="Tephone Contact" />
+                                <ToggleButton Margin="8,0,0,0" Style="{DynamicResource MaterialDesignRaisedLightButton}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </StackPanel>
+
+
+        </materialDesign:Flipper.BackContent>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VisualStateGroup" />
+        </VisualStateManager.VisualStateGroups>
+    </materialDesign:Flipper>
+</UserControl>

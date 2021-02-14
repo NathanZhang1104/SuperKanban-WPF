@@ -1,0 +1,212 @@
+﻿<UserControl
+    x:Class="SuperKanban.View.CardShowView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SuperKanban.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SuperKanban.View"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
+    x:Name="userControl"
+    d:DataContext="{d:DesignInstance viewModels:CardShowViewModel}"
+    d:DesignHeight="1050"
+    d:Width="300"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Popupbox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border MinWidth="300" Background="White">
+        <DockPanel x:Name="BackContent">
+            <DockPanel DockPanel.Dock="Bottom">
+                <Button
+                    Height="40"
+                    HorizontalAlignment="Left"
+                    Click="Button_Click"
+                    Cursor="Hand"
+                    DockPanel.Dock="Left"
+                    Foreground="#FF464646"
+                    Style="{StaticResource MaterialDesignToolForegroundButton}">
+                    <materialDesign:PackIcon
+                        Width="32"
+                        Height="32"
+                        HorizontalAlignment="Right"
+                        Kind="ArrowLeft" />
+                </Button>
+                <Button
+                    Height="40"
+                    HorizontalAlignment="Right"
+                    Cursor="Hand"
+                    DockPanel.Dock="Right"
+                    MouseDoubleClick="Button_Click_delete"
+                    Style="{StaticResource MaterialDesignToolForegroundButton}">
+                    <materialDesign:PackIcon
+                        Width="32"
+                        Height="32"
+                        HorizontalAlignment="Right"
+                        Foreground="#FF4C4B4B"
+                        Kind="Delete" />
+                </Button>
+            </DockPanel>
+
+            <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+                <Border Background="White">
+                    <StackPanel>
+
+                        <TextBox
+                            x:Name="title_text"
+                            Margin="5,5,5,0"
+                            materialDesign:HintAssist.Hint="Title"
+                            FontSize="16"
+                            Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                            Text="{Binding Card.Title, UpdateSourceTrigger=PropertyChanged}" />
+                        <ListBox Margin="5,5,5,5" Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
+                            <ListBoxItem Content="清单" IsSelected="True" />
+                            <ListBoxItem Content="附件" />
+                            <ListBoxItem Content="规则" ToolTip="dwdwwdw" />
+                            <ListBoxItem Content="习惯" IsEnabled="False" />
+                        </ListBox>
+                        <TextBox
+                            x:Name="AddTagTextBox"
+                            Margin="5,0,5,5"
+                            Padding="6,0,0,0"
+                            VerticalAlignment="Center"
+                            materialDesign:HintAssist.Hint="add tag"
+                            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                            <TextBox.InputBindings>
+                                <KeyBinding
+                                    Key="Enter"
+                                    Command="{Binding AddTagCommand}"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+
+                        <ItemsControl Margin="5,5,5,15" ItemsSource="{Binding Card.Tags}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <materialDesign:Chip
+                                        Height="25"
+                                        Margin="3"
+                                        Background="#4F9F76F3"
+                                        Content="{Binding Name}"
+                                        DeleteCommand=""
+                                        FontSize="12"
+                                        IsDeletable="True"
+                                        ToolTip="This is an example chip" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <ItemsControl ItemsSource="{Binding Card.SubTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="5,0,5,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="37" />
+                                            <ColumnDefinition Width="246*" />
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox
+                                            Grid.ColumnSpan="2"
+                                            materialDesign:CheckBoxAssist.CheckBoxSize="30"
+                                            Click="CheckBox_Click"
+                                            IsChecked="{Binding Completed}" />
+                                        <TextBox
+                                            Grid.Column="1"
+                                            Margin="0,5,5,5"
+                                            AcceptsReturn="True"
+                                            Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                                            Text="{Binding Title}"
+                                            TextWrapping="NoWrap" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="37" />
+                                <ColumnDefinition Width="246*" />
+                            </Grid.ColumnDefinitions>
+                            <materialDesign:PackIcon
+                                Width="27"
+                                Height="30"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="#FF747474"
+                                Kind="FormatListChecks" />
+                            <TextBox
+                                Grid.Column="1"
+                                Margin="0,5,5,5"
+                                HorizontalContentAlignment="Left"
+                                VerticalContentAlignment="Center"
+                                materialDesign:HintAssist.Hint="add subtask"
+                                AcceptsReturn="True"
+                                Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                                TextWrapping="Wrap">
+                                <TextBox.InputBindings>
+                                    <KeyBinding
+                                        Key="Return"
+                                        Command="{Binding AddSubTaskCommand}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+                                </TextBox.InputBindings>
+
+                            </TextBox>
+                        </Grid>
+
+                        <TextBox
+                            Height="100"
+                            Margin="5,12,5,0"
+                            VerticalAlignment="Top"
+                            materialDesign:HintAssist.Hint="Description"
+                            AcceptsReturn="True"
+                            FontSize="12"
+                            Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                            Text="{Binding Card.Description, UpdateSourceTrigger=PropertyChanged}"
+                            TextWrapping="Wrap"
+                            VerticalScrollBarVisibility="Auto" />
+                        <StackPanel
+                            Margin="0,12,10,20"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="激活" />
+                            <ToggleButton Margin="8,0,0,0" />
+                        </StackPanel>
+                        <StackPanel
+                            Margin="0,12,10,20"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <Button
+                                Command="{Binding RunDialogCommand}"
+                                Content="应用规则"
+                                Cursor="Hand"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                ToolTip="MaterialDesignFlatButton" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+
+</UserControl>
