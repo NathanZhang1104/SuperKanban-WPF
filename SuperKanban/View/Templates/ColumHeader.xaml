@@ -18,7 +18,7 @@
     GiveFeedback="UserControl_GiveFeedback"
     MouseDown="ColumnHeader_MouseDown"
     DataContextChanged="userControl_DataContextChanged"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Cursor="Hand">
     <Border
         Margin="-10"
         AllowDrop="True"

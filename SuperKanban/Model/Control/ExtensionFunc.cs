@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using SuperKanban.Model.Entities;
 namespace SuperKanban.Model.Control
 {
     public static class ExtensionF
@@ -32,6 +33,28 @@ namespace SuperKanban.Model.Control
                 return ProcessSame.Different;
 
             }
+        }
+
+        public static bool IsIn(this DateTime dateTime,TimeRuleOne ruleOne)
+        {
+            int week = ((int)dateTime.DayOfWeek-1)%7;
+            if (week > ruleOne.DateRange.from && week < ruleOne.DateRange.to)
+            {
+                double timevalue = dateTime.Hour + ((double)(dateTime.Minute * 60 + dateTime.Second)) / 3600;
+                if (timevalue > ruleOne.TimeRange.start && timevalue < ruleOne.TimeRange.end)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 }

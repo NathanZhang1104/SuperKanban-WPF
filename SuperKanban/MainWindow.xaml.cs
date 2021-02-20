@@ -33,6 +33,18 @@ namespace SuperKanban
             ICollectionView view = CollectionViewSource.GetDefaultView(listbox1.Items);
             view.GroupDescriptions.Clear();
             view.GroupDescriptions.Add(new PropertyGroupDescription("Category"));
+
+            foreach (var item in (listbox1.DataContext as BoardTreeViewModel).Boards)
+            {
+                if (item.Id == Properties.Settings.Default.SelectBoardId)
+                {
+                    BoardViewModel curbdvm = new BoardViewModel() { Board = item };
+                    mainboard.DataContext = curbdvm;
+                    GlobalFinder.CurBoard = curbdvm.Board;
+                    GlobalFinder.CurColumns = mainboard.sfKanban.Columns;
+                    break;
+                }
+            }
         }
 
         private void listbox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -46,22 +58,16 @@ namespace SuperKanban
             BoardViewModel curbdvm = new BoardViewModel() { Board = curboard };
             //mainboard = new BoardView();
             mainboard.DataContext = curbdvm;
-
-
-        }
-
-        private void listbox1_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            //BoardViewModel boardViewModel = mainboard.DataContext as BoardViewModel;
-            //boardViewModel.Board = listbox1.SelectedItem as Board;
-
+            GlobalFinder.CurBoard = curboard;
+            GlobalFinder.CurColumns = mainboard.sfKanban.Columns;
+            Properties.Settings.Default.SelectBoardId = curboard.Id;
+            Properties.Settings.Default.Save();
 
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             saveboard();
-
         }
 
         private void saveboard()
@@ -70,13 +76,11 @@ namespace SuperKanban
             if (boardViewModel.Board != null)
             {
                 boardViewModel.Board.BoardColumns.Clear();
-                foreach (var item in mainboard.sfKanban.Columns)
+                for (int i = 0; i < mainboard.sfKanban.Columns.Count; i++)
                 {
-                    boardViewModel.Board.BoardColumns.Add(new BoardColumn(item, boardViewModel.Board));
+                    boardViewModel.Board.BoardColumns.Add(new BoardColumn( mainboard.sfKanban.Columns[i], boardViewModel.Board));
                 }
-                ;
                 App.UnitOfWork.Boards.Update(boardViewModel.Board);
-                ;
             }
         }
 

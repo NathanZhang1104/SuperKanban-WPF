@@ -24,11 +24,11 @@ namespace SuperKanban.ViewModel
         public bool ShowV { get; set; }
         public CardShowViewModel()
         {
-            AddTagCommand = new RelayCommand(AddNewTag, o => !string.IsNullOrWhiteSpace((o as TextBox).Text.ToString()));
-            AddSubTaskCommand = new RelayCommand(AddSubTask, o => !string.IsNullOrWhiteSpace((o as TextBox).Text.ToString()));
+            AddTagCommand = new RelayCommand(AddNewTag, o => Card.Editable && !string.IsNullOrWhiteSpace((o as TextBox).Text.ToString()));
+            AddSubTaskCommand = new RelayCommand(AddSubTask, o => Card.Editable&&!string.IsNullOrWhiteSpace((o as TextBox).Text.ToString()));
             RunDialogCommand = new RelayCommand(ExecuteRunDialog, o => true);
-            DeleteTagCommand = new RelayCommand(o => card.Tags.Remove((Tag)o), o => true);
-            DeleteSubTaskCommand = new RelayCommand(o => card.SubTasks.Remove((SubTask)o), o => true);
+            DeleteTagCommand = new RelayCommand(o => card.Tags.Remove((Tag)o), o => Card.Editable );
+            DeleteSubTaskCommand = new RelayCommand(o => card.SubTasks.Remove((SubTask)o), o => Card.Editable );
 
 
         }
@@ -49,6 +49,7 @@ namespace SuperKanban.ViewModel
             var textBlock = parameter as TextBox;
 
 
+            
             Card.Tags.Add(new Tag { Name = textBlock.Text.ToString() });
             textBlock.Text = "";
         }
@@ -83,9 +84,9 @@ namespace SuperKanban.ViewModel
             {
                 DataContext = new AppRuleViewModel() { AppRule = Card.AppRule }
             };
-
-            //show the dialog
-            var result = await MaterialDesignThemes.Wpf.DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            view.SetEditable(Card.Editable&&!Card.AppRule.Active);
+                    //show the dialog
+             var result = await MaterialDesignThemes.Wpf.DialogHost.Show(view, "RootDialog", ClosingEventHandler);
 
             //check the result...
             Console.WriteLine("Dialog was closed, the CommandParameter used to close it was: " + (result ?? "NULL"));

@@ -104,7 +104,7 @@ namespace SuperKanban.ViewModel
             SaveBoardCommand = new RelayCommand(SaveBoard, o => true);
             DeleteSubTaskCommand = new RelayCommand(o => SelectedCard.SubTasks.Remove((SubTask)o), o => true);
             DeleteTagCommand = new RelayCommand(o => SelectedCard.Tags.Remove((Tag)o), o => true);
-            DeleteCardCommand = new RelayCommand(RemoveSelectedCard, o => SelectedCard != null);
+            DeleteCardCommand = new RelayCommand(RemoveSelectedCard, o => SelectedCard.Editable);
             CloseTaskViewCommand = new RelayCommand(o => TaskViewWidth = 0, o => true);
             AddColumnCommand = new RelayCommand(AddColumn, o => true);
             MoveColumnCommand = new RelayCommand(MoveColumn, o => true);
@@ -192,26 +192,23 @@ namespace SuperKanban.ViewModel
         private Random randomer = new Random();
 
         private void AddColumn(object parameter) {
-            s_AddColumnCount++;
             var cur_index = BoardWindow.sfKanban.Columns.IndexOf((parameter as KanbanColumn));
-            BoardWindow.sfKanban.Columns.Insert(cur_index+1,new KanbanColumn() { Title = "", Categories = s_AddColumnCount.ToString()});
-            Board.BoardColumns.Insert(cur_index + 1, new BoardColumn(  "", s_AddColumnCount.ToString()));
-
-
+            BoardWindow.sfKanban.Columns.Insert(cur_index+1,new KanbanColumn() { Title = "", Categories = Interop.NativeMethods.GetRnd(6, custom: "@")});
+            //Board.BoardColumns.Insert(cur_index + 1, new BoardColumn(  "", s_AddColumnCount.ToString()));
         }
         private void CopyColumn(object parameter)
         {
             var colum = parameter as KanbanColumn;
-            s_AddColumnCount++;
             var cur_index = BoardWindow.sfKanban.Columns.IndexOf(colum);
-            BoardWindow.sfKanban.Columns.Insert(cur_index + 1, new KanbanColumn() { Title = colum.Title, Categories = s_AddColumnCount.ToString() });
-            Board.BoardColumns.Insert(cur_index + 1, new BoardColumn(colum.Title as string, s_AddColumnCount.ToString()));
+            var newcolumn = new KanbanColumn() { Title = colum.Title, Categories = Interop.NativeMethods.GetRnd(6, custom: "@") };
+            BoardWindow.sfKanban.Columns.Insert(cur_index + 1, newcolumn);
+            //Board.BoardColumns.Insert(cur_index + 1, new BoardColumn(colum.Title as string, s_AddColumnCount.ToString()));
             var toRemove = Board.Cards.Where(x => x.Category == colum.Categories).ToList();
 
             foreach (var item in toRemove)
             {
                 Card newcard = DeepCopier.Copy(item);
-                newcard.Category = s_AddColumnCount.ToString();
+                newcard.Category = newcolumn.Categories;
 
                 Board.Cards.Add(newcard);
             }
@@ -223,7 +220,7 @@ namespace SuperKanban.ViewModel
             var toRemove = Board.Cards.Where(x => x.Category == colum.Categories).ToList();
             foreach (var item in toRemove)
                 Board.Cards.Remove(item);
-            Board.BoardColumns.RemoveAt(BoardWindow.sfKanban.Columns.IndexOf(colum));
+            //Board.BoardColumns.RemoveAt(BoardWindow.sfKanban.Columns.IndexOf(colum));
             BoardWindow.sfKanban.Columns.Remove(colum);
         }
         private void MoveColumn(object parameter)
@@ -254,7 +251,7 @@ namespace SuperKanban.ViewModel
             if (drop_index< BoardWindow.sfKanban.Columns.Count)
             {
                 BoardWindow.sfKanban.Columns.Move(drag_index, drop_index);
-                Board.BoardColumns.Move(drag_index, drop_index);
+                //Board.BoardColumns.Move(drag_index, drop_index);
 
             }
             else
@@ -262,7 +259,7 @@ namespace SuperKanban.ViewModel
                 for (int i = 0; i < drop_index-1-drag_index; i++)
                 {
                     BoardWindow.sfKanban.Columns.Move(drop_index-1, drag_index);
-                    Board.BoardColumns.Move(drop_index - 1, drag_index);
+                    //Board.BoardColumns.Move(drop_index - 1, drag_index);
 
                 }
             }

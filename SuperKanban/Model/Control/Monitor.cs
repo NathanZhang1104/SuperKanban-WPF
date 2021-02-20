@@ -5,7 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-
+using System.Threading;
+using System.Windows.Automation;
 namespace SuperKanban.Model.Control
 {
     public class Monitor
@@ -14,17 +15,17 @@ namespace SuperKanban.Model.Control
         static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll", SetLastError = true)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
+        public Action<UserApp> AduitAction;
         public void Execute()
         {
+
             var timer = new System.Timers.Timer();
             timer.Elapsed += detect;
 
             timer.AutoReset = true;
             timer.Enabled = true;
-            timer.Interval = 1000;
+            timer.Interval = 200;
             timer.Start();
-            while (true) {; }
         }
         private static Process last_process ;
 
@@ -51,16 +52,19 @@ namespace SuperKanban.Model.Control
         }
         private void detect(object sender, System.Timers.ElapsedEventArgs e)
         {
+            DateTime t1 = DateTime.Now;
+
             IntPtr handle = GetForegroundWindow();   //获取当前窗口句柄;
             uint currentThreadPid;
             GetWindowThreadProcessId(handle, out currentThreadPid);
-            Process process = Process.GetProcessById((int)currentThreadPid);
+            Process process = Process.GetProcessById((int)currentThreadPid) ;
             if (process == null || process?.Id <100) return;
             ProcessSame same = process.CompareTo(last_process);
             if (same == ProcessSame.Same)
             {
                 return;
             }
+       
             else if(same == ProcessSame.Different)
             {
                 bool isnew = true;
@@ -84,8 +88,18 @@ namespace SuperKanban.Model.Control
             {
                 CurrentApp.CurrentProcess = process;
             }
-           
-         
+       
+            if (CurrentApp.AppType == AppType.Browser)
+            {
+                var url= CurrentApp.UpdateCurUrl();
+                TimeSpan ts1 = DateTime.Now - t1;
+                Debug.WriteLine(ts1);
+                Debug.WriteLine(url);
+
+            }
+                last_process = process;
+            AduitAction(CurrentApp);
+
         }
     }
 }

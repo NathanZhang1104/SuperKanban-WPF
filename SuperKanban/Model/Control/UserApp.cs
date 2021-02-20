@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using SuperKanban.Interop;
+
 namespace SuperKanban.Model.Control
 {
 
@@ -14,13 +16,15 @@ namespace SuperKanban.Model.Control
         SameProcessDifferentTitle = 2,
         Different,
     }
-
+    
     public enum AppType
     {
         Common=0,
         Browser=1,
         Other=2
     }
+
+
 
     public class UserApp
     {
@@ -29,8 +33,15 @@ namespace SuperKanban.Model.Control
 
         public UserApp(Process processes)
         {
+            if (processes.MainModule.FileName.Contains("edge.exe"))
+            {
+                this.AppType = AppType.Browser;
+                this.browserType = BrowserType.MSEDGE;
+            }
             this.CurrentProcess = processes;
         }
+        public AppType AppType{get;set;}
+        private BrowserType browserType { get; set; }
 
         //private Process currentprocess;
 
@@ -74,9 +85,12 @@ namespace SuperKanban.Model.Control
             }
         }
 
-        public string GetCurUrl()
+        public string Url { get; set; }
+        public string UpdateCurUrl()
         {
-            return "21";
+             Url= UiaMethods.GetURLFromProcess(CurrentProcess, browserType);
+
+            return Url;
         }
         public string Title
         {
@@ -93,6 +107,15 @@ namespace SuperKanban.Model.Control
             {
                 return CurrentProcess?.MainModule.FileName;
             }
+        }
+
+        public bool KillSelf()
+        {
+            if (this.AppType == AppType.Browser)
+            {
+                NativeMethods.ControlKey(87);
+            }
+            return true;
         }
     }
 }

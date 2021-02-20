@@ -60,7 +60,6 @@
                                 x:Name="listbox1"
                                 Width="200"
                                 Margin="0,20,0,0"
-                                DataContextChanged="listbox1_DataContextChanged"
                                 ItemsSource="{Binding Boards}"
                                 SelectionChanged="listbox1_SelectionChanged">
                                 <ListBox.DataContext>
@@ -214,7 +213,7 @@
                     Fill="#FFF4F4F5"
                     Stretch="Fill"
                     Stroke="Black" />
-                <View:BoardView x:Name="mainboard" />
+                <View:BoardView x:Name="mainboard"  />
 
                 <!--<View:BoardView/>-->
 

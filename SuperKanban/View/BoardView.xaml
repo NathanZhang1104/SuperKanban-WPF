@@ -164,7 +164,7 @@
                                     PlacementMode="BottomAndAlignLeftEdges"
                                     StaysOpen="False"
                                     Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
-                              
+
                                     <StackPanel>
                                         <Button
                                             Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:BoardView}}, Path=DataContext.AddCardCommand}"
@@ -177,22 +177,21 @@
                                     </StackPanel>
                                 </materialDesign:PopupBox>
                             </DockPanel>
+                  
                             <StackPanel
                                 Margin="10,5,5,5"
                                 Orientation="Horizontal"
                                 Visibility="{Binding SubTasks.Count, Converter={StaticResource FromNumberToVisibilityConverter}}">
                                 <materialDesign:PackIcon
                                     Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                    Height="32"
+                                    Height="28"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Foreground="#FF2F2F2F"
                                     Kind="CheckboxMarkedCircleOutline" />
-                                <Label  Content="{Binding SubTasks, Converter={StaticResource ToStringConverter}, Mode=TwoWay}" />
+                                <Label Content="{Binding SubTasks, Converter={StaticResource ToStringConverter}, Mode=TwoWay}" />
                             </StackPanel>
-                            <ItemsControl
-                                Margin="5"
-                                ItemsSource="{Binding Tags}">
+                            <ItemsControl Margin="5" ItemsSource="{Binding Tags}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <materialDesign:Chip

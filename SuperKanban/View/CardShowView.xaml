@@ -4,11 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:SuperKanban.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
     xmlns:local="clr-namespace:SuperKanban.View"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:usercontrols="clr-namespace:SuperKanban.View.UserConrols"
     xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
-     xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
     x:Name="userControl"
     d:DataContext="{d:DesignInstance viewModels:CardShowViewModel}"
     d:DesignHeight="1050"
@@ -31,6 +32,8 @@
     <Border MinWidth="300" Background="White">
         <Border.Resources>
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:BooleanReverseConverter x:Key="BooleanReverseConverter" />
+
         </Border.Resources>
         <DockPanel x:Name="BackContent">
             <DockPanel DockPanel.Dock="Bottom">
@@ -64,7 +67,10 @@
                 </Button>
             </DockPanel>
 
-            <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer
+                x:Name="scrollviewer"
+                DockPanel.Dock="Top"
+                VerticalScrollBarVisibility="Auto">
                 <Border Background="White">
                     <StackPanel>
 
@@ -73,31 +79,94 @@
                             Margin="5,5,5,0"
                             materialDesign:HintAssist.Hint="Title"
                             FontSize="16"
+                            IsEnabled="{Binding Card.Editable}"
                             Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
                             Text="{Binding Card.Title, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox
+                            Height="120"
+                            Margin="5,12,5,6"
+                            VerticalAlignment="Top"
+                            materialDesign:HintAssist.Hint="Description"
+                            AcceptsReturn="True"
+                            FontSize="12"
+                            IsEnabled="{Binding Card.Editable}"
+                            Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                            Text="{Binding Card.Description, UpdateSourceTrigger=PropertyChanged}"
+                            TextWrapping="Wrap"
+                            VerticalScrollBarVisibility="Auto" />
                         <ListBox Margin="5,5,5,5" Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
                             <ListBoxItem Content="清单" IsSelected="True" />
-                            <ListBoxItem Content="附件" />
+                            <ListBoxItem Content="小锁头" />
+                            <ListBoxItem Content="🍅番茄钟" />
                             <ListBoxItem Content="规则" ToolTip="dwdwwdw" />
                             <ListBoxItem Content="习惯" IsEnabled="False" />
                         </ListBox>
-                        <TextBox 
-                            x:Name="AddTagTextBox"
-                            Margin="5,0,5,5"
-                            Padding="6,0,0,0"
-                            VerticalAlignment="Center"
-                            materialDesign:HintAssist.Hint="add tag"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
-                            <TextBox.InputBindings>
-                                <KeyBinding
-                                    Key="Return"
-                                    
-                                    Command="{Binding AddTagCommand}"
-                                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
-                            </TextBox.InputBindings>
-                        </TextBox>
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker
+                                Width="120"
+                                Margin="10"
+                                HorizontalAlignment="Left"
+                                materialDesign:HintAssist.Hint="Due Date"
+                                IsEnabled="{Binding Card.Editable}"
+                                Style="{StaticResource MaterialDesignFloatingHintDatePicker}" />
+                            <materialDesign:TimePicker
+                                x:Name="PresetTimePicker"
+                                Width="120"
+                                Margin="10"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Bottom"
+                                materialDesign:HintAssist.Hint="Accr Time"
+                                IsEnabled="{Binding Card.Editable}"
+                                Style="{StaticResource MaterialDesignFloatingHintTimePicker}" />
+                        </StackPanel>
+                        <Grid Margin="0,15,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="37" />
+                                <ColumnDefinition Width="246*" />
+                            </Grid.ColumnDefinitions>
+                            <materialDesign:PackIcon
+                                Width="27"
+                                Height="30"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="#FF747474"
+                                Kind="TimerOutline" />
+                            <usercontrols:Pomodoro Grid.Column="1" />
 
-                        <ItemsControl Margin="5,5,5,15" ItemsSource="{Binding Card.Tags}">
+                        </Grid>
+                        <Grid Margin="0,15,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="37" />
+                                <ColumnDefinition Width="246*" />
+                            </Grid.ColumnDefinitions>
+                            <materialDesign:PackIcon
+                                Width="27"
+                                Height="30"
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="#FF747474"
+                                Kind="TagHeartOutline" />
+
+                            <TextBox
+                                x:Name="AddTagTextBox"
+                                Grid.Column="1"
+                                Margin="0,5,10,5"
+                                HorizontalContentAlignment="Left"
+                                VerticalContentAlignment="Center"
+                                materialDesign:HintAssist.Hint="add tag"
+                                Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding
+                                        Key="Return"
+                                        Command="{Binding AddTagCommand}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Grid>
+
+
+                        <ItemsControl Margin="10,5,10,0" ItemsSource="{Binding Card.Tags}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <materialDesign:Chip
@@ -119,48 +188,8 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
-                        <ItemsControl ItemsSource="{Binding Card.SubTasks}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="5,0,5,0" Background="White">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="37" />
-                                            <ColumnDefinition Width="246*" />
-                                        </Grid.ColumnDefinitions>
-                                        <CheckBox
-                                            Grid.Column="0"
-                                            materialDesign:CheckBoxAssist.CheckBoxSize="30"
-                                            Click="CheckBox_Click"
-                                            IsChecked="{Binding Completed}" />
-                                        <TextBox
-                                            MaxHeight="60"
-                                            Grid.Column="1"
-                                            Margin="0,5,5,5"
-                                            AcceptsReturn="True"
-                                            Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
-                                            Text="{Binding Title}"
-                                            TextWrapping="Wrap" />
-                                        <Button
-                                            Grid.Column="1"
-                                            Margin="0,2,5,0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Top"
-                                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:CardShowView}}, Path=DataContext.DeleteSubTaskCommand}"
-                                            CommandParameter="{Binding}"
-                                            Content="{materialDesign:PackIcon Kind=Close}"
-                                            Style="{StaticResource MaterialDesignToolButton}"
-                                            Visibility="{Binding Path=IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
 
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                        <Grid Margin="5,0,5,0">
+                        <Grid Margin="0,15,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="37" />
                                 <ColumnDefinition Width="246*" />
@@ -190,28 +219,51 @@
 
                             </TextBox>
                         </Grid>
+                        <ItemsControl ItemsSource="{Binding Card.SubTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="15,0,5,0" Background="White">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="32" />
+                                            <ColumnDefinition Width="246*" />
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox
+                                            Grid.Column="0"
+                                            materialDesign:CheckBoxAssist.CheckBoxSize="25"
+                                            Background="Gray"
+                                            Click="CheckBox_Click"
+                                            IsChecked="{Binding Completed}" />
+                                        <TextBox
+                                            Grid.Column="1"
+                                            MaxHeight="60"
+                                            Margin="0,5,5,5"
+                                            AcceptsReturn="True"
+                                            Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                                            Text="{Binding Title}"
+                                            TextWrapping="Wrap" />
+                                        <Button
+                                            Grid.Column="1"
+                                            Margin="0,2,5,0"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:CardShowView}}, Path=DataContext.DeleteSubTaskCommand}"
+                                            CommandParameter="{Binding}"
+                                            Content="{materialDesign:PackIcon Kind=Close}"
+                                            Style="{StaticResource MaterialDesignToolButton}"
+                                            Visibility="{Binding Path=IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
 
-                        <TextBox
-                            Height="100"
-                            Margin="5,12,5,0"
-                            VerticalAlignment="Top"
-                            materialDesign:HintAssist.Hint="Description"
-                            AcceptsReturn="True"
-                            FontSize="12"
-                            Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
-                            Text="{Binding Card.Description, UpdateSourceTrigger=PropertyChanged}"
-                            TextWrapping="Wrap"
-                            VerticalScrollBarVisibility="Auto" />
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
                         <StackPanel
-                            Margin="0,12,10,20"
-                            HorizontalAlignment="Right"
-                            Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="激活" />
-                            <ToggleButton Margin="8,0,0,0" />
-                        </StackPanel>
-                        <StackPanel
-                            Margin="0,12,10,20"
-                            HorizontalAlignment="Right"
+                            Margin="10,12,10,20"
+                            HorizontalAlignment="Left"
                             Orientation="Horizontal">
                             <Button
                                 Command="{Binding RunDialogCommand}"
@@ -219,7 +271,69 @@
                                 Cursor="Hand"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 ToolTip="MaterialDesignFlatButton" />
+                            <TextBlock VerticalAlignment="Center" Text="激活" />
+                            <ToggleButton Margin="8,0,0,0" IsChecked="{Binding Card.AppRule.Active}" />
                         </StackPanel>
+                        <Grid Height="78" Margin="0,0,10,110">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="19*" />
+                                <RowDefinition Height="20*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="37" />
+                                <ColumnDefinition Width="205*" />
+                                <ColumnDefinition Width="61*" />
+                            </Grid.ColumnDefinitions>
+                            <materialDesign:PackIcon
+                                Width="27"
+                                Height="30"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="#FF747474"
+                                Kind="LockOpenOutline"
+                                RenderTransformOrigin="0.443,0.073" />
+                            <ComboBox
+                                x:Name="combobox"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                Height="34"
+                                Margin="0,0,10,0"
+                                VerticalAlignment="Center"
+                                materialDesign:HintAssist.Hint="选择目标"
+                                materialDesign:HintAssist.IsFloating="False"
+                                DisplayMemberPath="Value"
+                                IsEnabled="{Binding ElementName=locktb, Path=IsChecked, Converter={StaticResource BooleanReverseConverter}}"
+                                SelectedValue="{Binding Card.SLock.LockType}"
+                                SelectedValuePath="Key"
+                                Style="{StaticResource MaterialDesignFilledComboBox}" />
+
+                            <CheckBox
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="18,0,47,2"
+                                Content="允许全局密码解锁"
+                                IsChecked="{Binding Card.SLock.AllowPassword}"
+                                IsEnabled="{Binding ElementName=locktb, Path=IsChecked, Converter={StaticResource BooleanReverseConverter}}" />
+
+                            <ToggleButton
+                                x:Name="locktb"
+                                Grid.Row="1"
+                                Grid.Column="2"
+                                Margin="0,3,4,-1"
+                                IsChecked="{Binding Card.SLock.Active}"
+                                Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                ToolTip="MaterialDesignSwitchToggleButton with Content and ToggleButtonAssist.OnContent">
+                                <materialDesign:PackIcon Kind="LockOpenOutline" RenderTransformOrigin=".5,.5">
+                                    <materialDesign:PackIcon.RenderTransform>
+                                        <RotateTransform Angle="45" />
+                                    </materialDesign:PackIcon.RenderTransform>
+                                </materialDesign:PackIcon>
+                                <materialDesign:ToggleButtonAssist.OnContent>
+                                    <materialDesign:PackIcon Kind="LockOutline" />
+                                </materialDesign:ToggleButtonAssist.OnContent>
+                            </ToggleButton>
+
+                        </Grid>
                     </StackPanel>
                 </Border>
             </ScrollViewer>

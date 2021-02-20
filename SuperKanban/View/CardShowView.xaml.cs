@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SuperKanban.ViewModel;
-
+using SuperKanban.Model.Entities;
 namespace SuperKanban.View
 {
     /// <summary>
@@ -20,6 +20,16 @@ namespace SuperKanban.View
     public partial class CardShowView : UserControl
     {
 
+        public Dictionary<LockType, string> mydic = new Dictionary<LockType, string>()
+
+            {
+
+                {LockType.CardLock,"当前卡片"},
+
+                //{LockType.ColumnLock,"时间胶囊"},
+                    {LockType.ColumnLock,"当前卡片列"}
+
+            };
 
         public bool ShowMe
         {
@@ -54,6 +64,7 @@ namespace SuperKanban.View
         public CardShowView()
         {
             InitializeComponent();
+            combobox.ItemsSource = mydic;
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -77,5 +88,8 @@ namespace SuperKanban.View
             ShowMe = false;
             DeleteCommand.Execute(null);
         }
+
+
+
     }
 }

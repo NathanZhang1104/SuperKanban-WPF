@@ -35,12 +35,15 @@ namespace SuperKanban.ViewModel
             AddBoardCommand = new RelayCommand(AddBoard, o => true);
             RemoveBoardCommand = new RelayCommand(RemoveBoard, o =>true);
             Boards = new ObservableCollection<Board>(App.UnitOfWork.Boards.Get());
+            GlobalFinder.Boards = Boards;
+            ;
 
         }
 
         private void AddBoard(object parameter)
         {
             Board b1 = new Board() { Name ="未命名看板",Category= parameter  as string};
+            b1.BoardColumns.Add(new BoardColumn("Todo", "212131"));
             Boards.Add(b1);
             App.UnitOfWork.Boards.Insert(b1);
         }

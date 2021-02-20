@@ -15,7 +15,6 @@ using SuperKanban.Model.Entities;
 using Syncfusion.UI.Xaml.Kanban;
 using SuperKanban.View.Templates;
 using System.Runtime.InteropServices;
-using SuperKanban.ViewModel;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
@@ -45,6 +44,8 @@ namespace SuperKanban.View
             {
                 CardShowView.title_text.Focus();
             }
+            CardShowView.scrollviewer.ScrollToVerticalOffset(0);
+
         }
 
         public void ClearSubTaskEntry()
@@ -143,10 +144,13 @@ namespace SuperKanban.View
 
         private void sfKanban_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            CardShowView.ShowMe = false;
             var boardViewModel = DataContext as BoardViewModel;
             boardViewModel.RaisePropertyChanged("Board");
             boardViewModel.BoardWindow = this;
             sfKanban.Columns.Clear();
+            //TODO:置空
+            if (boardViewModel.Board == null) return;
             foreach (var colitem in boardViewModel.Board.BoardColumns)
             {
                 var cur_col = new KanbanColumn() { Title = colitem.Title, Categories = colitem.Category };

@@ -44,6 +44,8 @@ namespace SuperKanban.Model.Entities
     }
     public class TimeRuleOne:ViewModelBase
     {
+        private DateTime last_checktime;
+        private TimeSpan cumulative_time;
         private TimeRange timeRange;
         private DateRange dateRange;
         private LimitType limitType;
@@ -80,10 +82,18 @@ namespace SuperKanban.Model.Entities
             RaisePropertyChanged("DateRange");
 
         }
+        
     }
     public class TimeLimit
     {
 
         public ObservableCollection<TimeRuleOne> TimeRuleOneList { get; set; } = new ObservableCollection<TimeRuleOne>();
+        public LimitType check() {
+            foreach (TimeRuleOne item in TimeRuleOneList)
+            {
+
+            }
+            return LimitType.Allow;
+        }
     }
 }
