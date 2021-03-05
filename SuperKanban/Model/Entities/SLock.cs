@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace SuperKanban.Model.Entities
@@ -12,12 +11,7 @@ namespace SuperKanban.Model.Entities
         CardLock = 1,
         PillLock = 2,
     }
-    public enum PomodoroLinkType
-    {
-        CurColumn = 0,
-        CurCard = 1,
-        None=2
-    }
+
     public class SLock
     {
 
@@ -43,7 +37,8 @@ namespace SuperKanban.Model.Entities
             get => active; set
             {
                 Card card = GlobalFinder.FindCard(CardId);
-                if (card == null) return;
+                if (card == null) { 
+                    active = value;  return; }
                 if (!card.Editable && value)
                 {
                     return;
@@ -78,14 +73,5 @@ namespace SuperKanban.Model.Entities
 
             }
         }
-    }
-
-    public class Pomodoro
-    {
-        public TimeSpan WorkSpan { get; set; }
-        public TimeSpan BreakSpan { get; set; }
-        public int RecurTime { get; set; } = 1;
-        public PomodoroLinkType PomodoroLinkType { get; set; } = PomodoroLinkType.None;
-
     }
 }

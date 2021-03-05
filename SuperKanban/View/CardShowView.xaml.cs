@@ -89,7 +89,9 @@ namespace SuperKanban.View
             DeleteCommand.Execute(null);
         }
 
+        private void userControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
 
-
+        }
     }
 }

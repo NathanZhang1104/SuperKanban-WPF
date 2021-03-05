@@ -78,6 +78,7 @@ namespace SuperKanban.Model.Entities
     {
         public Board()
         {
+            Cards =  new ObservableCollection<Card>();
         }
 
         public int Id { get; set; }
@@ -85,7 +86,7 @@ namespace SuperKanban.Model.Entities
         public string Category { get; set; } = "none";
         public string Description { get; set; }
         public DateTime CreatedAt { get; } = DateTime.Now;
-        public ObservableCollection<Card> Cards { get; set; } = new ObservableCollection<Card>();
+        public ObservableCollection<Card> Cards { get; set; }
         public ObservableCollection<BoardColumn> BoardColumns { get; set; } = new ObservableCollection<BoardColumn>();
     }
 }

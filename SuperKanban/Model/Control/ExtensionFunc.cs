@@ -37,8 +37,9 @@ namespace SuperKanban.Model.Control
 
         public static bool IsIn(this DateTime dateTime,TimeRuleOne ruleOne)
         {
-            int week = ((int)dateTime.DayOfWeek-1)%7;
-            if (week > ruleOne.DateRange.from && week < ruleOne.DateRange.to)
+            int week = ((int)dateTime.DayOfWeek-1);
+            week = week < 0 ? 6 : week;
+            if (week >= ruleOne.DateRange.from && week <= ruleOne.DateRange.to)
             {
                 double timevalue = dateTime.Hour + ((double)(dateTime.Minute * 60 + dateTime.Second)) / 3600;
                 if (timevalue > ruleOne.TimeRange.start && timevalue < ruleOne.TimeRange.end)

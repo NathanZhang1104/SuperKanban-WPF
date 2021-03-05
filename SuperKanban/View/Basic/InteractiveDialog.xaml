@@ -1,0 +1,62 @@
+﻿<UserControl
+    x:Class="SuperKanban.View.Basic.InteractiveDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:local="clr-namespace:SuperKanban.View.Basic"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:s="clr-namespace:System;assembly=mscorlib"
+    xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
+    Width="370"
+    Height="170"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <s:Boolean x:Key="True">True</s:Boolean>
+            <s:Boolean x:Key="False">False</s:Boolean>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <viewModels:InteractiveDialogViewModel />
+    </UserControl.DataContext>
+    <Grid>
+        
+        <Border Background="White" CornerRadius="10">
+            <hc:SimplePanel>
+                <TextBlock
+                    Width="308"
+                    Height="58"
+                    Margin="0,22,0,0"
+                    VerticalAlignment="Top"
+                    Style="{StaticResource TextBlockTitle}"
+                    Text="{Binding Message}" />
+
+
+                <Button
+                    Width="260"
+                    Margin="56,91,0,0"
+                    VerticalAlignment="Top"
+                    Command="{Binding CloseCmd}"
+                    CommandParameter="{StaticResource True}"
+                    Content="确定"
+                    Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Left" />
+                <Button
+                    Width="258"
+                    Margin="0,131,0,0"
+                    VerticalAlignment="Top"
+                    Command="{Binding CloseCmd}"
+                    CommandParameter="{StaticResource False}"
+                    Content="取消"
+                    Style="{StaticResource ButtonDashed}" />
+
+            </hc:SimplePanel>
+        </Border>
+
+    </Grid>
+</UserControl>

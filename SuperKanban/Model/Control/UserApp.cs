@@ -21,7 +21,8 @@ namespace SuperKanban.Model.Control
     {
         Common=0,
         Browser=1,
-        Other=2
+        Other=2,
+        Screen,
     }
 
 
@@ -30,7 +31,10 @@ namespace SuperKanban.Model.Control
     {
 
         private List<Process> processes = new List<Process>();
-
+        public UserApp()
+        {
+            ;
+        }
         public UserApp(Process processes)
         {
             if (processes.MainModule.FileName.Contains("edge.exe"))
@@ -42,7 +46,7 @@ namespace SuperKanban.Model.Control
         }
         public AppType AppType{get;set;}
         private BrowserType browserType { get; set; }
-
+        
         //private Process currentprocess;
 
         public Process CurrentProcess
@@ -105,17 +109,49 @@ namespace SuperKanban.Model.Control
             set {; }
             get
             {
-                return CurrentProcess?.MainModule.FileName;
+                return "";
             }
         }
 
-        public bool KillSelf()
+        private  DateTime last_kill_time { get; set; } 
+        public void KillSelf()
         {
             if (this.AppType == AppType.Browser)
             {
-                NativeMethods.ControlKey(87);
+                if ((DateTime.Now - last_kill_time).TotalSeconds > 1)
+                {
+                    NativeMethods.ControlKey(87);
+                    last_kill_time = DateTime.Now;
+
+                }
+              
+
             }
-            return true;
+            else if(this.AppType== AppType.Screen)
+            {
+                Debug.WriteLine("锁屏");
+                if ((DateTime.Now - last_kill_time).TotalSeconds > 15)
+                {
+                    //NativeMethods.LockWorkStation();
+                    ;
+                }
+                last_kill_time = DateTime.Now;
+          
+            }
+            else if (this.AppType == AppType.Common)
+            {
+                try
+                {
+                    CurrentProcess.Kill();
+                }
+                catch
+                {
+                    ;
+                }
+            }
+            ;
         }
+
+        public Action IamRunning;
     }
 }

@@ -18,12 +18,20 @@
     GiveFeedback="UserControl_GiveFeedback"
     MouseDown="ColumnHeader_MouseDown"
     DataContextChanged="userControl_DataContextChanged"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
     mc:Ignorable="d" Cursor="Hand">
     <Border
         Margin="-10"
         AllowDrop="True"
         Background="#FFF7F9FB">
         <DockPanel Background="White">
+            <DockPanel.Resources>
+                <Style TargetType="materialDesign:Ripple" >
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+                </Style>
+            </DockPanel.Resources>
             <Rectangle
                 x:Name="right_r"
                 Width="3"
@@ -47,7 +55,8 @@
                 Margin="5,5,15,5"
                 DockPanel.Dock="Right"
                 PlacementMode="BottomAndAlignRightEdges"
-                StaysOpen="False">
+                StaysOpen="False"  RenderTransformOrigin="0.5,0.5">
+      
                 <StackPanel>
                     <StackPanel
                         Margin="10"
@@ -84,7 +93,9 @@
 
                 </StackPanel>
             </materialDesign:PopupBox>
+            
             <Button
+                hc:TipElement.Placement="LeftTop"
                 Width="34"
                 Height="34"
                 Margin="5,5,5,5"
@@ -95,7 +106,9 @@
                 DockPanel.Dock="Right"
                 Style="{StaticResource MaterialDesignIconForegroundButton}"
                 ToolTip="添加卡片">
-                <materialDesign:PackIcon Kind="Plus" Opacity="0.8" />
+                <materialDesign:PackIcon  Style="{StaticResource PackIconStyle}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Kind="Plus" Opacity="0.8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+
             </Button>
 
 
@@ -117,7 +130,7 @@
                         <TextBlock
                             Text="{Binding Header}"
                             TextTrimming="CharacterEllipsis">
-                            
+
                         </TextBlock>
                     </Label>
                     <TextBox

@@ -322,12 +322,10 @@
       x:Key="DataContextProxy"
       Data="{Binding}" xmlns:domain="clr-namespace:MaterialDesignDemo.Domain" />
             </DataGrid.Resources>-->
-                <!--Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"-->
+                <!--  Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"  -->
 
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn
-                        EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}"
-                        ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}">
+                    <DataGridCheckBoxColumn EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}" ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}">
                         <DataGridCheckBoxColumn.Header>
                             <Border Background="Transparent">
                                 <CheckBox />
@@ -371,11 +369,14 @@
 
                     <!--  use custom combo box column to get better combos. Use ItemsSourceBinding as your binding template to be applied to each combo  -->
                     <materialDesign:DataGridComboBoxColumn
+                        x:Name="limittype_combobox"
                         Width="100"
                         Header="限制类型"
                         IsEditable="True"
-                        ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AccrTimeSelectorView}}, Path=DataContext.LimitTypes}"
-                        SelectedValueBinding="{Binding LimitType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        DisplayMemberPath="Value"
+                        SelectedValuePath="Key"
+                        SelectedValueBinding="{Binding LimitType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        >
                         <!--Setting the editing element style allows access to all of the combo box's properties
                           <materialDesign:MaterialDataGridComboBoxColumn.EditingElementStyle>
                               <Style TargetType="ComboBox" BasedOn="{StaticResource {ComponentResourceKey TypeInTargetAssembly={x:Type ComboBox}, ResourceId=MaterialDataGridComboBoxColumnEditingStyle}}" >
@@ -384,12 +385,13 @@
                           </materialDesign:MaterialDataGridComboBoxColumn.EditingElementStyle>
                         -->
                     </materialDesign:DataGridComboBoxColumn>
+          
                     <materialDesign:DataGridComboBoxColumn
                         Width="100"
-                        Header="限制时长"
+                        Header="时长(分)"
                         IsEditable="True"
                         ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AccrTimeSelectorView}}, Path=DataContext.LimitTimes}"
-                        SelectedValueBinding="{Binding LimitTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        SelectedValueBinding="{Binding Limitminiutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <!--Setting the editing element style allows access to all of the combo box's properties
                           <materialDesign:MaterialDataGridComboBoxColumn.EditingElementStyle>
                               <Style TargetType="ComboBox" BasedOn="{StaticResource {ComponentResourceKey TypeInTargetAssembly={x:Type ComboBox}, ResourceId=MaterialDataGridComboBoxColumnEditingStyle}}" >
@@ -398,17 +400,21 @@
                           </materialDesign:MaterialDataGridComboBoxColumn.EditingElementStyle>
                         -->
                     </materialDesign:DataGridComboBoxColumn>
+
                     <DataGridTemplateColumn Width="100" Header="     激活">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <ToggleButton  IsChecked="{Binding Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="MaterialDesignSwitchToggleButton with Content and ToggleButtonAssist.OnContent">
-                                    <materialDesign:PackIcon  Kind="EmoticonHappyOutline" RenderTransformOrigin=".5,.5">
+                                <ToggleButton
+                                    IsChecked="{Binding Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                    ToolTip="MaterialDesignSwitchToggleButton with Content and ToggleButtonAssist.OnContent">
+                                    <materialDesign:PackIcon Kind="EmoticonHappyOutline" RenderTransformOrigin=".5,.5">
                                         <materialDesign:PackIcon.RenderTransform>
                                             <RotateTransform Angle="180" />
                                         </materialDesign:PackIcon.RenderTransform>
                                     </materialDesign:PackIcon>
                                     <materialDesign:ToggleButtonAssist.OnContent>
-                                        <materialDesign:PackIcon   Kind="EmoticonHappy" />
+                                        <materialDesign:PackIcon Kind="EmoticonHappy" />
                                     </materialDesign:ToggleButtonAssist.OnContent>
                                 </ToggleButton>
                             </DataTemplate>

@@ -21,35 +21,22 @@ namespace SuperKanban.Model.Control
         private delegate void aduite_dg(UserApp userApp);
         private void AuditCurColApp(UserApp userApp)
         {
+            if (GlobalFinder.CurColumns == null) { return; }
             foreach (var column in GlobalFinder.CurColumns)
             {
                 for (int i = 0; i < column.Cards.Count; i++)
                 {
                     var card = column.Cards[i].Content as Card;
 
-                    if (card.AppRule?.Active != true) continue;
+                    if (!card.AppRuleShow ||card.AppRule?.Active != true) continue;
                     var res = card.AppRule.check(userApp);
-                    if ((res & Conclusion.BlockApp) == Conclusion.BlockApp)
-                    {
-                        Debug.WriteLine("关闭进程");
-                        userApp.KillSelf();
-
-                        //userApp;
-                    }
-                    else if ((res & Conclusion.BlockScreen) == Conclusion.BlockScreen)
-                    {
-                        if (DateTime.Now.Second % 10 == 0)
-                        {
-                            ;
-                        }
-                    }
 
                 }
             }
         }
         public void AuditApp(UserApp userApp)
         {
-            App.Current.Dispatcher.Invoke(new aduite_dg(AuditCurColApp),userApp);
+            App.Current?.Dispatcher.Invoke(new aduite_dg(AuditCurColApp),userApp);
             var a = GlobalFinder.Boards;
             if (GlobalFinder.Boards == null) { return; }
             foreach (var board in GlobalFinder.Boards){
@@ -58,20 +45,6 @@ namespace SuperKanban.Model.Control
                 {
                     if (card.AppRule?.Active != true) continue;
                     var res = card.AppRule.check(userApp);
-                    if ((res & Conclusion.BlockApp) == Conclusion.BlockApp)
-                    {
-                        Debug.WriteLine("关闭进程");
-                        userApp.KillSelf();
-
-                        //userApp;
-                    }
-                    else if ((res & Conclusion.BlockScreen) == Conclusion.BlockScreen)
-                    {
-                        if (DateTime.Now.Second % 10 == 0)
-                        {
-                            ;
-                        }
-                    }
 
                 }
             }

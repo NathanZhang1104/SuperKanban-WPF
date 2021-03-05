@@ -1,0 +1,92 @@
+﻿<hc:BlurWindow
+    x:Class="SuperKanban.View.Main.Settings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:basic="clr-namespace:SuperKanban.View.Basic"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:local="clr-namespace:SuperKanban.View.Main"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:settingsprop="clr-namespace:SuperKanban.Properties"
+    xmlns:usercontrols="clr-namespace:SuperKanban.View.UserConrols"
+    Title="Settings"
+    Width="800"
+    Height="400"
+    Style="{StaticResource WindowBlur}"
+    mc:Ignorable="d">
+
+    <TabControl Style="{StaticResource TabControlCapsule}" TabStripPlacement="Left">
+        <TabItem
+            Height="20"
+            Header="通用设置"
+            HeaderStringFormat="{}{0}">
+            <Border>
+                <StackPanel Margin="10" HorizontalAlignment="Left">
+                    <TextBlock
+                        Margin="15,20,5,5"
+                        HorizontalAlignment="Left"
+                        Style="{StaticResource TextBlockLarge}">
+                        <Run Text="应用设置" />
+                    </TextBlock>
+                    <TextBlock
+                        Margin="15,20,5,5"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Style="{StaticResource TextBlockTitle}">
+                        <Run Text="开机自动启动" />
+                    </TextBlock>
+                    <ToggleButton
+                        x:Name="AutoRunTgBtn"
+                        Width="40"
+                        Margin="15,0,5,10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Click="AutoRunTgBtn_Click"
+                        IsChecked="{Binding Path=AutoRun, Source={x:Static settingsprop:Settings.Default}}"
+                        Style="{StaticResource ToggleButtonSwitch}" />
+                    <TextBlock
+                        Margin="15,10,5,5"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Style="{StaticResource TextBlockTitle}"><Run Text="进程守护" />
+                        <usercontrols:QuestionGuide Cursor="Hand" Url="https://www.wolai.com/wolai/k1Qgi1J2L9vWBQkkJz8j82" />
+
+                    </TextBlock>
+                    <ToggleButton
+                        Width="40"
+                        Margin="15,0,5,10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        IsEnabled="False"
+                        Style="{StaticResource ToggleButtonSwitch}" />
+
+                </StackPanel>
+            </Border>
+        </TabItem>
+        <TabItem
+            Height="20"
+            Header="账户设置"
+            HeaderStringFormat="{}{0}">
+            <Border Background="{DynamicResource SuccessBrush}">
+                <TextBlock Foreground="{DynamicResource TextIconBrush}" Style="{StaticResource TextBlockLargeBold}" />
+            </Border>
+        </TabItem>
+        <TabItem Header="主题" HeaderStringFormat="{}{0}">
+
+
+            <ScrollViewer>
+                <basic:ColorTool />
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="关于" HeaderStringFormat="{}{0}">
+            <Border Background="{DynamicResource InfoBrush}">
+                <TextBlock Foreground="{DynamicResource TextIconBrush}" Style="{StaticResource TextBlockLargeBold}">
+                    <Run Text="3" />
+                    <Run Text="3" />
+                </TextBlock>
+            </Border>
+        </TabItem>
+
+    </TabControl>
+
+</hc:BlurWindow>

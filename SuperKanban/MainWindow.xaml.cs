@@ -18,13 +18,15 @@ using SuperKanban.Model.Entities;
 using SuperKanban.ViewModel;
 using Syncfusion.UI.Xaml.Kanban;
 using SuperKanban.View;
+using GalaSoft.MvvmLight.Messaging;
+using SuperKanban.View.Main;
 
 namespace SuperKanban
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow 
     {
         public MainWindow()
         {
@@ -33,8 +35,9 @@ namespace SuperKanban
             ICollectionView view = CollectionViewSource.GetDefaultView(listbox1.Items);
             view.GroupDescriptions.Clear();
             view.GroupDescriptions.Add(new PropertyGroupDescription("Category"));
-
-            foreach (var item in (listbox1.DataContext as BoardTreeViewModel).Boards)
+            var btvm = new BoardTreeViewModel();
+            listbox1.DataContext = btvm;
+            foreach (var item in btvm.Boards)
             {
                 if (item.Id == Properties.Settings.Default.SelectBoardId)
                 {
@@ -45,6 +48,13 @@ namespace SuperKanban
                     break;
                 }
             }
+        }
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+
+            //DataContext = ViewModelLocator.Instance.Main;
+            NonClientAreaContent = new NonClientAreaContent();
         }
 
         private void listbox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -73,12 +83,19 @@ namespace SuperKanban
         private void saveboard()
         {
             BoardViewModel boardViewModel = mainboard.DataContext as BoardViewModel;
+
+            
             if (boardViewModel.Board != null)
             {
+                //boardViewModel.Board.Cards
                 boardViewModel.Board.BoardColumns.Clear();
                 for (int i = 0; i < mainboard.sfKanban.Columns.Count; i++)
                 {
                     boardViewModel.Board.BoardColumns.Add(new BoardColumn( mainboard.sfKanban.Columns[i], boardViewModel.Board));
+                    for (int j = 0; j < mainboard.sfKanban.Columns[i].Cards.Count; j++)
+                    {
+                        (mainboard.sfKanban.Columns[i].Cards[j].Content as Card).Index = j;
+                    }
                 }
                 App.UnitOfWork.Boards.Update(boardViewModel.Board);
             }

@@ -1,4 +1,4 @@
-﻿<Window
+﻿<hc:BlurWindow
     x:Class="SuperKanban.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
     xmlns:entities="clr-namespace:SuperKanban.Model.Entities"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:SuperKanban"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,210 +16,203 @@
     Width="1200"
     Height="700"
     Closed="Window_Closed"
+    Cursor="Hand"
     mc:Ignorable="d">
 
+    <Grid>
 
-    <materialDesign:DialogHost
-        DialogTheme="Inherit"
-        Identifier="RootDialog"
-        SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
-            <materialDesign:DrawerHost.LeftDrawerContent>
-                <DockPanel MinWidth="220">
-                    <ToggleButton
-                        Margin="16"
-                        HorizontalAlignment="Right"
-                        DockPanel.Dock="Top"
-                        IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}"
-                        Style="{StaticResource MaterialDesignHamburgerToggleButton}" />
+        <materialDesign:DialogHost
+            DialogTheme="Inherit"
+            Identifier="RootDialog"
+            SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
+            <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+                <materialDesign:DrawerHost.LeftDrawerContent>
+                    <DockPanel MinWidth="220">
+                        <ToggleButton
+                            Margin="16"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Top"
+                            IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}"
+                            Style="{StaticResource MaterialDesignHamburgerToggleButton}" />
 
-                    <TextBox
-                        x:Name="DemoItemsSearchBox"
-                        Width="200"
-                        MaxHeight="40"
-                        Margin="16,4"
-                        materialDesign:HintAssist.Hint="Search"
-                        materialDesign:HintAssist.IsFloating="True"
-                        materialDesign:TextFieldAssist.DecorationVisibility="Collapsed"
-                        materialDesign:TextFieldAssist.HasClearButton="True"
-                        materialDesign:TextFieldAssist.HasOutlinedTextField="True"
-                        materialDesign:TextFieldAssist.TextFieldCornerRadius="4"
-                        DockPanel.Dock="Top"
-                        Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}" />
-                    <Grid
-                        x:Name="boardtreegrid"
-                        MinWidth="220"
-                        DockPanel.Dock="Top">
+                        <TextBox
+                            x:Name="DemoItemsSearchBox"
+                            Width="200"
+                            MaxHeight="50"
+                            Margin="16,4"
+                            materialDesign:HintAssist.Hint="Search"
+                            materialDesign:HintAssist.IsFloating="True"
+                            materialDesign:TextFieldAssist.DecorationVisibility="Collapsed"
+                            materialDesign:TextFieldAssist.HasClearButton="True"
+                            materialDesign:TextFieldAssist.HasOutlinedTextField="True"
+                            materialDesign:TextFieldAssist.TextFieldCornerRadius="4"
+                            Cursor="IBeam"
+                            DockPanel.Dock="Top"
+                            Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}" />
+                        <Grid
+                            x:Name="boardtreegrid"
+                            MinWidth="220"
+                            DockPanel.Dock="Top">
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <StackPanel>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <StackPanel>
 
-                            <ListBox
-                                x:Name="listbox1"
-                                Width="200"
-                                Margin="0,20,0,0"
-                                ItemsSource="{Binding Boards}"
-                                SelectionChanged="listbox1_SelectionChanged">
-                                <ListBox.DataContext>
-                                    <viewModels:BoardTreeViewModel />
-                                </ListBox.DataContext>
-                                <ListBox.GroupStyle>
-                                    <GroupStyle>
-                                        <GroupStyle.ContainerStyle>
-                                            <Style TargetType="{x:Type GroupItem}">
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                            <Expander Padding="0" materialDesign:ExpanderAssist.HorizontalHeaderPadding="10,0,10,0">
-                                                                <Expander.Header>
-                                                                    <StackPanel
-                                                                        Height="30"
-                                                                        Background="#00000000"
-                                                                        Orientation="Horizontal">
-                                                                        <StackPanel VerticalAlignment="Center">
-                                                                            <emoji:TextBlock
-                                                                                HorizontalAlignment="Left"
-                                                                                VerticalAlignment="Center"
-                                                                                FontFamily="Bahnschrift SemiBold"
-                                                                                FontSize="16"
-                                                                                Text="{Binding Name}" />
-                                                                        </StackPanel>
-                                                                        <materialDesign:PopupBox
-                                                                            Margin="55,0,10,0"
-                                                                            HorizontalAlignment="Right"
-                                                                            VerticalAlignment="Center"
-                                                                            DockPanel.Dock="Right"
-                                                                            Foreground="#dd656565"
-                                                                            PlacementMode="BottomAndAlignRightEdges"
-                                                                            StaysOpen="False"
-                                                                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                                            <StackPanel>
-                                                                                <Separator />
-                                                                                <Button
-                                                                                    Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBox}, Path=DataContext.AddBoardCommand}"
-                                                                                    CommandParameter="{Binding Name}"
-                                                                                    Content="新建看板" />
-                                                                                <Separator />
-                                                                                <Button Content="Goodbye" />
+                                <ListBox
+                                    x:Name="listbox1"
+                                    Width="200"
+                                    Margin="0,20,0,0"
+                                    ItemsSource="{Binding Boards}"
+                                    SelectionChanged="listbox1_SelectionChanged">
+
+                                    <ListBox.GroupStyle>
+                                        <GroupStyle>
+                                            <GroupStyle.ContainerStyle>
+                                                <Style TargetType="{x:Type GroupItem}">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                                <Expander Padding="0" materialDesign:ExpanderAssist.HorizontalHeaderPadding="10,0,10,0">
+                                                                    <Expander.Header>
+                                                                        <StackPanel
+                                                                            Height="30"
+                                                                            Background="#00000000"
+                                                                            Orientation="Horizontal">
+                                                                            <StackPanel VerticalAlignment="Center">
+                                                                                <emoji:TextBlock
+                                                                                    HorizontalAlignment="Left"
+                                                                                    VerticalAlignment="Center"
+                                                                                    FontFamily="Bahnschrift SemiBold"
+                                                                                    FontSize="16"
+                                                                                    Text="{Binding Name}" />
                                                                             </StackPanel>
-                                                                        </materialDesign:PopupBox>
-                                                                    </StackPanel>
-                                                                </Expander.Header>
-                                                                <ItemsPresenter />
-                                                            </Expander>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </GroupStyle.ContainerStyle>
+                                                                            <materialDesign:PopupBox
+                                                                                Margin="55,0,10,0"
+                                                                                HorizontalAlignment="Right"
+                                                                                VerticalAlignment="Center"
+                                                                                DockPanel.Dock="Right"
+                                                                                Foreground="#dd656565"
+                                                                                PlacementMode="BottomAndAlignRightEdges"
+                                                                                StaysOpen="False"
+                                                                                Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                                <StackPanel>
+                                                                                    <Separator />
+                                                                                    <Button
+                                                                                        Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBox}, Path=DataContext.AddBoardCommand}"
+                                                                                        CommandParameter="{Binding Name}"
+                                                                                        Content="新建看板" />
+                                                                                    <Separator />
+                                                                                    <Button Content="Goodbye" />
+                                                                                </StackPanel>
+                                                                            </materialDesign:PopupBox>
+                                                                        </StackPanel>
+                                                                    </Expander.Header>
+                                                                    <ItemsPresenter />
+                                                                </Expander>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </GroupStyle.ContainerStyle>
 
-                                    </GroupStyle>
-                                </ListBox.GroupStyle>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <templatesView:BoardTreeHeader Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                                        </GroupStyle>
+                                    </ListBox.GroupStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <templatesView:BoardTreeHeader Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
 
-                        </StackPanel>
-
-
-                    </Grid>
+                            </StackPanel>
 
 
-                </DockPanel>
-            </materialDesign:DrawerHost.LeftDrawerContent>
+                        </Grid>
 
 
-            <DockPanel x:Name="boarddock" Background="#FFB6A7A7">
-                <materialDesign:ColorZone
-                    Padding="8"
-                    materialDesign:ShadowAssist.ShadowDepth="Depth2"
-                    DockPanel.Dock="Top"
-                    Mode="PrimaryMid">
-                    <DockPanel>
-                        <StackPanel Orientation="Horizontal">
+                    </DockPanel>
+                </materialDesign:DrawerHost.LeftDrawerContent>
+
+
+                <DockPanel x:Name="boarddock" Background="#FFB6A7A7">
+
+                    <materialDesign:ColorZone
+                        Padding="8"
+                        materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                        DockPanel.Dock="Top"
+                        Mode="PrimaryMid">
+                        <DockPanel>
+
                             <ToggleButton
                                 x:Name="MenuToggleButton"
                                 AutomationProperties.Name="HamburgerToggleButton"
                                 IsChecked="False"
                                 Style="{StaticResource MaterialDesignHamburgerToggleButton}" />
 
-                            <Button
-                                Margin="24,0,12,0"
-                                materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"
-                                Content="{materialDesign:PackIcon Kind=ArrowLeft,
-                                                                  Size=24}"
-                                Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                                Style="{DynamicResource MaterialDesignToolButton}"
-                                ToolTip="Previous Item" />
 
-                            <Button
-                                Margin="8,0,0,0"
-                                materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"
-                                Content="{materialDesign:PackIcon Kind=ArrowRight,
-                                                                  Size=24}"
-                                Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                                Style="{DynamicResource MaterialDesignToolButton}"
-                                ToolTip="Next Item" />
-                        </StackPanel>
+                            <materialDesign:PopupBox
+                                DockPanel.Dock="Right"
+                                PlacementMode="BottomAndAlignRightEdges"
+                                StaysOpen="False">
+                                <StackPanel>
+                                    <StackPanel
+                                        Margin="10"
+                                        HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,10,0" Text="Light" />
+                                        <ToggleButton x:Name="DarkModeToggleButton" />
+                                        <TextBlock Margin="10,0,0,0" Text="Dark" />
+                                    </StackPanel>
 
-                        <materialDesign:PopupBox
-                            DockPanel.Dock="Right"
-                            PlacementMode="BottomAndAlignRightEdges"
-                            StaysOpen="False">
-                            <StackPanel>
-                                <StackPanel
-                                    Margin="10"
-                                    HorizontalAlignment="Center"
-                                    Orientation="Horizontal">
-                                    <TextBlock Margin="0,0,10,0" Text="Light" />
-                                    <ToggleButton x:Name="DarkModeToggleButton" />
-                                    <TextBlock Margin="10,0,0,0" Text="Dark" />
+                                    <Separator />
+
+                                    <Button Content="Hello World" />
+
+                                    <Button Content="Nice Popup" />
+
+                                    <Button Content="Can't Touch This" IsEnabled="False" />
+
+                                    <Separator />
+
+                                    <Button Content="Goodbye" />
                                 </StackPanel>
+                            </materialDesign:PopupBox>
 
-                                <Separator />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Material Design In XAML Toolkit"
+                                FontSize="22"
+                                Text="{Binding ElementName=listbox1.SelectedItem, Path=Title}" />
+                        </DockPanel>
+                    </materialDesign:ColorZone>
 
-                                <Button Content="Hello World" />
+                    <Path
+                        Width="1"
+                        Height="1"
+                        Margin="-76,79,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Data="M-75.519031,78.759792"
+                        Fill="#FFF4F4F5"
+                        Stretch="Fill"
+                        Stroke="Black" />
+                    <View:BoardView x:Name="mainboard" />
 
-                                <Button Content="Nice Popup" />
+                    <!--<View:BoardView/>-->
 
-                                <Button Content="Can't Touch This" IsEnabled="False" />
-
-                                <Separator />
-
-                                <Button Content="Goodbye" />
-                            </StackPanel>
-                        </materialDesign:PopupBox>
-
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Material Design In XAML Toolkit"
-                            FontSize="22"
-                            Text="看板" />
-                    </DockPanel>
-                </materialDesign:ColorZone>
-                <Path
-                    Width="1"
-                    Height="1"
-                    Margin="-76,79,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Data="M-75.519031,78.759792"
-                    Fill="#FFF4F4F5"
-                    Stretch="Fill"
-                    Stroke="Black" />
-                <View:BoardView x:Name="mainboard"  />
-
-                <!--<View:BoardView/>-->
-
-            </DockPanel>
-        </materialDesign:DrawerHost>
-    </materialDesign:DialogHost>
-
-</Window>
+                </DockPanel>
+            </materialDesign:DrawerHost>
+        </materialDesign:DialogHost>
+        <StackPanel
+            Width="349"
+            Height="200"
+            Margin="0,10,10,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            hc:Growl.GrowlParent="True"
+            RenderTransformOrigin="0.5,0.5" />
+    </Grid>
+</hc:BlurWindow>

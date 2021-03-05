@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Automation;
+using SuperKanban.Interop;
+using SuperKanban.Model.Entities;
+
 namespace SuperKanban.Model.Control
 {
     public class Monitor
@@ -15,19 +18,38 @@ namespace SuperKanban.Model.Control
         static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll", SetLastError = true)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        public static int timerInterval=500;
+
+        public static UserApp ScreenApp = new UserApp() { AppType = AppType.Screen };
+        public  void AuditScreen()//审核屏幕
+        {
+            while (ScreenApp.IamRunning != null)
+            {
+                ScreenApp.IamRunning -= ScreenApp.IamRunning;
+            }
+            AduitAction(ScreenApp);
+        }
         public Action<UserApp> AduitAction;
         public void Execute()
         {
+            AuditScreen();
 
             var timer = new System.Timers.Timer();
             timer.Elapsed += detect;
 
             timer.AutoReset = true;
             timer.Enabled = true;
-            timer.Interval = 200;
+            timer.Interval = timerInterval;
             timer.Start();
         }
         private static Process last_process ;
+
+        public Monitor()
+        {
+            AppRule.Active_changed+=AuditScreen;
+            GlobalFinder.Loaded += AuditScreen;
+        }
 
         public List<UserApp> UserApps { get; set; } = new List<UserApp>();
          
@@ -58,12 +80,41 @@ namespace SuperKanban.Model.Control
             uint currentThreadPid;
             GetWindowThreadProcessId(handle, out currentThreadPid);
             Process process = Process.GetProcessById((int)currentThreadPid) ;
-            if (process == null || process?.Id <100) return;
+           //var ret=  System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+            if (process == null || process?.Id < 100)
+            {//无法获取或者锁屏
+                return;
+            }
+
+            try//测试进程可读
+            {
+                var mM=process.MainModule;
+                if (process.MainModule.FileName.EndsWith("LockApp.exe"))//"锁屏"
+                {
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return;
+            }
+            if (ScreenApp.IamRunning != null)// 屏幕正在使用
+            {
+                ScreenApp.IamRunning();
+
+            }
             ProcessSame same = process.CompareTo(last_process);
             if (same == ProcessSame.Same)
             {
+                if (CurrentApp.IamRunning != null)
+                {
+                    CurrentApp.IamRunning();
+                }
                 return;
             }
+            
        
             else if(same == ProcessSame.Different)
             {
@@ -97,8 +148,17 @@ namespace SuperKanban.Model.Control
                 Debug.WriteLine(url);
 
             }
-                last_process = process;
+            last_process = process;
+            
+            while (CurrentApp.IamRunning!= null)
+            {
+                CurrentApp.IamRunning-= this.CurrentApp.IamRunning;
+            }
             AduitAction(CurrentApp);
+            if (CurrentApp.IamRunning != null)
+            {
+                CurrentApp.IamRunning();
+            }
 
         }
     }

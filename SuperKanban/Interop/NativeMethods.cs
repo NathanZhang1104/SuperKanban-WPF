@@ -16,6 +16,11 @@ namespace SuperKanban.Interop
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
         [DllImport("user32.dll")]
         public static extern bool LockWorkStation();
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern bool SystemParametersInfo(
+    int uAction, int uParam, ref bool lpvParam,
+    int flags);
+
 
         ///<summary>
         ///生成随机字符串 //转载请注明来自 http://www.uzhanbao.com
@@ -47,6 +52,22 @@ namespace SuperKanban.Interop
         /// <returns></returns>
         public static String WildCardToRegex(string rex)
         {
+            if (!rex.StartsWith("$"))
+            {
+                rex = "*"+rex;
+            }
+            else
+            {
+                rex = rex.Substring(1);
+            }
+            if (!rex.EndsWith("$"))
+            {
+                rex =  rex+ "*" ;
+            }
+            else
+            {
+                rex = rex.Remove(rex.Length - 1);
+            }
             return "^" + Regex.Escape(rex).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
         [DllImport("user32.dll", EntryPoint = "keybd_event", SetLastError = true)]

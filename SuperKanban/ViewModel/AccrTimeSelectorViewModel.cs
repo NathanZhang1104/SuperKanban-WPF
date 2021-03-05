@@ -10,8 +10,9 @@ namespace SuperKanban.ViewModel
         public AccrTimeSelectorViewModel()
         {
         }
-        public IEnumerable<LimitType> LimitTypes => new[] { LimitType.Block,LimitType.Limit };
-        public IEnumerable<string> LimitTimes=> new[] { "15分钟", "30分钟" , "45分钟" , "60分钟" , "90分钟" , "120分钟" };
+
+
+        public IEnumerable<int> LimitTimes=> new[] {5, 15, 30 , 45 , 60 , 90 , 120,150,180,240,300,360,420,480 };
 
         public TimeRuleOne CurrentTimeRuleOne;
         public LimitType CurrentType { get; set; } = LimitType.Block;

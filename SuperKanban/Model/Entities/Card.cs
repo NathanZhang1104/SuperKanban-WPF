@@ -1,34 +1,50 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DeepCopy;
 using GalaSoft.MvvmLight;
 namespace SuperKanban.Model.Entities
 {
-    ///<summary>
-    ///生成随机字符串 //转载请注明来自 http://www.uzhanbao.com
-    ///</summary>
-    ///<param name="length">目标字符串的长度</param>
-    ///<param name="useNum">是否包含数字，1=包含，默认为包含</param>
-    ///<param name="useLow">是否包含小写字母，1=包含，默认为包含</param>
-    ///<param name="useUpp">是否包含大写字母，1=包含，默认为包含</param>
-    ///<param name="useSpe">是否包含特殊字符，1=包含，默认为不包含</param>
-    ///<param name="custom">要包含的自定义字符，直接输入要包含的字符列表</param>
-    ///<returns>指定长度的随机字符串</returns>
+
 
     public class Card : ViewModelBase
     {
         
         private string title;
-        private string description;
+        private string description="";
         private bool editable = true;
         public string Id { get; set; }
         public int BoardId { get; set; }
-
+        public int Index { get; set; } = 0;
         public Card()
         { 
 
             Id=Interop.NativeMethods.GetRnd(8,custom:"#");
             SLock = new SLock(Id);
+            Pomodoro = new Pomodoro();
+            SubTasks = new ObservableCollection<SubTask>();
+            Tags = new ObservableCollection<Tag>();
+
+        }
+
+        public Card (Card card)
+        {
+
+            Id = Interop.NativeMethods.GetRnd(8, custom: "#");
+            SLock = new SLock(Id);
+            Pomodoro = new Pomodoro();
+            Title = DeepCopier.Copy(card.Title);
+            Tags = DeepCopier.Copy(card.Tags);
+            description = DeepCopier.Copy(card.description);
+            AppRule = DeepCopier.Copy(card.AppRule) ;
+            SubTasks = DeepCopier.Copy(card.SubTasks);
+            BoardId = card.BoardId;
+            Category = card.Category;
+            SubTasksShow = card.SubTasksShow;
+            PomodoroShow = card.PomodoroShow;
+            AppRuleShow = card.AppRuleShow;
+            SLockShow = card.SLockShow;
         }
 
         public string Title
@@ -59,6 +75,13 @@ namespace SuperKanban.Model.Entities
             get;set;
         }
         private bool isSelected;
+        private bool subTasksShow=false;
+        private bool pomodoroShow=false;
+        private bool appRuleShow=false;
+        private bool sLockShow=false;
+
+    
+
 
         public AppRule AppRule { get; set; } = new AppRule();
         public bool IsSelected
@@ -74,7 +97,23 @@ namespace SuperKanban.Model.Entities
         public bool Editable { get { return editable; }
             set { editable = value;
                 AppRule.Editable = value; }
-        } 
+        }
 
+        public bool SubTasksShow { get => subTasksShow; set { subTasksShow = value;
+                if (subTasksShow == false)
+                {
+                    SubTasks.Clear();
+                }
+                RaisePropertyChanged();
+            } }
+        public bool PomodoroShow { get => pomodoroShow; set { pomodoroShow = value;
+                RaisePropertyChanged();
+            } }
+        public bool AppRuleShow { get => appRuleShow; set { if ((!AppRule.Active && !value)||value) { appRuleShow = value; }
+                RaisePropertyChanged();
+            } }
+        public bool SLockShow { get => sLockShow; set { sLockShow = value;
+                RaisePropertyChanged();
+            } }
     }
 }

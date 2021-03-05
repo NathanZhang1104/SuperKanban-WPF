@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:SuperKanban.View"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    
     xmlns:viewModels="clr-namespace:SuperKanban.ViewModel"
     xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
     x:Name="usercontrol"
@@ -38,20 +39,14 @@
                         <DataGrid
                             x:Name="rulegrid"
                             Grid.RowSpan="2"
-                            Margin="1"
+                           
                             AutoGenerateColumns="False"
                             CanUserAddRows="False"
                             HeadersVisibility="Column"
                             IsEnabled="{Binding ElementName=usercontrol, Path=Editable}"
-                            ItemsSource="{Binding AppRule.AppRuleOneList}">
-                            <!--<DataGrid.Resources>
-                <domain:BindingProxy
-      x:Key="DataContextProxy"
-      Data="{Binding}" xmlns:domain="clr-namespace:MaterialDesignDemo.Domain" />
-            </DataGrid.Resources>-->
+                            ItemsSource="{Binding AppRule.AppRuleOneList}"
+                            Style="{StaticResource ResourceKey=MaterialDesignDataGrid}">
                             <DataGrid.Columns>
-
-
                                 <DataGridCheckBoxColumn
                                     Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
                                     EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}"
@@ -125,8 +120,8 @@
             Canvas.Bottom="10"
             Command="{x:Static wpf:DialogHost.CloseDialogCommand}"
             Style="{StaticResource MaterialDesignIconForegroundButton}"
-            ToolTip="保存并返回">
-            <materialDesign:PackIcon Kind="ArrowLeftThick" Opacity="0.8" />
+            ToolTip="保存并返回" Cursor="Hand">
+            <materialDesign:PackIcon Style="{StaticResource PackIconStyle}" Kind="ArrowLeftThick" Opacity="0.8" Height="18" Width="18" />
         </Button>
     </Canvas>
 </UserControl>

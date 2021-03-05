@@ -14,6 +14,12 @@ using Syncfusion.UI.Xaml.Kanban;
 using SuperKanban.View;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using HandyControl.Tools.Extension;
+using SuperKanban.View.Basic;
+using System.ComponentModel;
+using System.Windows.Data;
+
 namespace SuperKanban.ViewModel
 {
     public class BoardViewModel : ViewModelBase
@@ -51,7 +57,6 @@ namespace SuperKanban.ViewModel
         }
 
         private SubTask _newSubTask = new SubTask();
-        public int aaa { get; set; }
         public SubTask NewSubTask
         {
             get => _newSubTask;
@@ -74,7 +79,18 @@ namespace SuperKanban.ViewModel
             }
         }
         public CardShowViewModel CardShowViewModel { get; set; } = new CardShowViewModel();
-        public ObservableCollection<CardViewModel> CardViewModels { get; set; } = new ObservableCollection<CardViewModel>();
+
+        public ICollectionView collectionView
+        {
+            get
+            {
+                var collectionView = CollectionViewSource.GetDefaultView(Board.Cards);
+                collectionView.SortDescriptions.Clear();
+                collectionView.SortDescriptions.Add(new SortDescription(nameof(Card.Index), ListSortDirection.Ascending));
+                collectionView.Refresh();
+                return collectionView;
+            }
+        }
 
 
 
@@ -110,8 +126,7 @@ namespace SuperKanban.ViewModel
             MoveColumnCommand = new RelayCommand(MoveColumn, o => true);
             CopyColumnCommand = new RelayCommand(CopyColumn, o => true);
             DeleteColumnCommand = new RelayCommand(DeleteColumn, o => true);
-    
-
+     
 
         }
 
@@ -123,16 +138,37 @@ namespace SuperKanban.ViewModel
 
         private void RemoveSelectedCard(object parameter)
         {
-            if(parameter as Card == null)
-            {
-                Board.Cards.Remove(SelectedCard);
-            }
-            else
-            {
-                var card = parameter as Card;
-                Board.Cards.Remove(parameter as Card);
 
+            Task<bool> task1 = RemoveSelectedCardDialog( parameter);
+ 
+          
+        }
+        private async Task<bool> RemoveSelectedCardDialog(object parameter)
+        {
+
+            var card = parameter as Card;
+            var DialogResult = true;
+            if (card.AppRule.AppRuleOneList.Count != 0||card.Description?.Length>30)
+            {
+                DialogResult = await HandyControl.Controls.Dialog.Show<InteractiveDialog>()
+        .Initialize<InteractiveDialogViewModel>(vm => vm.Message = "您确定要删除此卡片吗？")
+        .GetResultAsync<bool>();
             }
+    
+            if (DialogResult)
+            {
+                if (card == null)
+                {
+                    Board.Cards.Remove(SelectedCard);
+                }
+                else
+                {
+                    Board.Cards.Remove(card);
+
+                }
+            }
+            return DialogResult;
+
         }
 
         private void AddNewSubTask(object parameter)
@@ -150,6 +186,8 @@ namespace SuperKanban.ViewModel
         private void AddCard(object parameter)
         {
             Card newcard;
+    
+
             var inputvard = parameter as Card;
             if (inputvard == null)
             {
@@ -160,9 +198,7 @@ namespace SuperKanban.ViewModel
                     CreatedAt = DateTime.Now,
                     Description = "",
                     Title = "",
-                    SubTasks = new ObservableCollection<SubTask>(),
                     Priority = "None",
-                    Tags = new ObservableCollection<Tag>()
                 };
                 SelectedCard = newcard;
                 Board.Cards.Insert(0, newcard);
@@ -170,7 +206,7 @@ namespace SuperKanban.ViewModel
             }
             else
             {
-                newcard = DeepCopier.Copy<Card>(inputvard);
+                newcard = new Card(inputvard);
                 SelectedCard = newcard;
                 Board.Cards.Add(newcard);
 
@@ -207,7 +243,7 @@ namespace SuperKanban.ViewModel
 
             foreach (var item in toRemove)
             {
-                Card newcard = DeepCopier.Copy(item);
+                Card newcard = new Card(item);
                 newcard.Category = newcolumn.Categories;
 
                 Board.Cards.Add(newcard);
@@ -216,12 +252,36 @@ namespace SuperKanban.ViewModel
         }
         private void DeleteColumn(object parameter)
         {
+
+            Task<bool> task1 = DeleteColumnCardDialog(parameter);
+
+        }
+        private async Task<bool> DeleteColumnCardDialog(object parameter)
+        {
             var colum = parameter as KanbanColumn;
-            var toRemove = Board.Cards.Where(x => x.Category == colum.Categories).ToList();
-            foreach (var item in toRemove)
-                Board.Cards.Remove(item);
-            //Board.BoardColumns.RemoveAt(BoardWindow.sfKanban.Columns.IndexOf(colum));
-            BoardWindow.sfKanban.Columns.Remove(colum);
+
+            foreach (var card in colum.Cards)
+            {
+                if((card.Content as Card).SLock.Active)
+                {
+                    HandyControl.Controls.Growl.Warning("无法删除，请解除被锁定的卡片后尝试");
+                    return false;
+                }
+            }
+
+            var DialogResult = await HandyControl.Controls.Dialog.Show<InteractiveDialog>()
+                  .Initialize<InteractiveDialogViewModel>(vm => vm.Message = "您确定要删除此卡片组吗？")
+                  .GetResultAsync<bool>();
+            if (DialogResult)
+            {
+                var toRemove = Board.Cards.Where(x => x.Category == colum.Categories).ToList();
+                foreach (var item in toRemove)
+                    Board.Cards.Remove(item);
+                //Board.BoardColumns.RemoveAt(BoardWindow.sfKanban.Columns.IndexOf(colum));
+                BoardWindow.sfKanban.Columns.Remove(colum);
+            }
+            return DialogResult;
+
         }
         private void MoveColumn(object parameter)
         {

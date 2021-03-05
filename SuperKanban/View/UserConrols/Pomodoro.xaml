@@ -8,6 +8,10 @@
     xmlns:local="clr-namespace:SuperKanban.View.UserConrols"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+       xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:viewModels="clr-namespace:SuperKanban.Model.Entities"
+    x:Name="userControl"
+    d:DataContext="{d:DesignInstance viewModels:Pomodoro}"
     d:Height="44"
     d:Width="276"
     mc:Ignorable="d">
@@ -15,6 +19,7 @@
         <SolidColorBrush x:Key="Background.stop" Color="#FFE75F55" />
         <SolidColorBrush x:Key="Background.play" Color="#FF95EEA9" />
         <converters:TimeToWidthConverter x:Key="TimeToWidthConverter" />
+        <converters:BooleanToPomoColorConverter x:Key="BooleanToPomoColorConverter" />
 
     </UserControl.Resources>
     <Grid>
@@ -28,47 +33,70 @@
             VerticalAlignment="Center"
             HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center"
-            Background="#FFF98282"
+            Background="{Binding Work, Converter={StaticResource BooleanToPomoColorConverter}}"
             FontSize="24"
             Foreground="White"
             UniformCornerRadius="5">
+            
 
             <TextBlock
                 Name="lblTime"
                 HorizontalAlignment="Center"
-                Text="25:00" />
+                Text="{Binding RemainTimeText}" />
         </materialDesign:Card>
         <StackPanel
+            Margin="-5,0,0,0"
             Grid.Column="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Orientation="Horizontal">
             <Button
+               Command="{Binding PlayCmd, Mode=OneWay}"
+                
                 x:Name="btnStartStop"
                 Width="28"
                 Height="28"
                 Margin="0,0,15,0"
                 Background="{DynamicResource Background.play}"
-                Click="Button_Click"
                 Foreground="White"
                 Style="{StaticResource MaterialDesignIconButton}"
-                ToolTip="MaterialDesignIconButton">
+                ToolTip="start" Cursor="Hand">
                 <materialDesign:PackIcon
+                    
+                    Style="{StaticResource PackIconStyle}"
                     Width="12"
                     Height="12"
                     Kind="Play" />
             </Button>
+            <Button
+                Width="28"
+                Height="28"
+                Margin="0,0,15,0"
+                Background="{DynamicResource Background.stop}"
+                Foreground="White"
+                Style="{StaticResource MaterialDesignIconButton}"
+               Command="{Binding StopCmd}" 
+                
+                ToolTip="Stop" Cursor="Hand">
+                <materialDesign:PackIcon
+                    Style="{StaticResource PackIconStyle}"
+                    Width="12"
+                    Height="12"
+                    Kind="Stop" />
+            </Button>
+
 
 
             <ToggleButton
+                IsChecked="{Binding Work}"
                 Background="#FFE7E7E7"
                 BorderBrush="#FFA39A9A"
                 Cursor="Hand"
                 Style="{StaticResource MaterialDesignActionToggleButton}"
                 ToolTip="MaterialDesignActionLightToggleButton">
-                <emoji:TextBlock Text="🍅" />
+                <emoji:TextBlock Text="😴" />
                 <materialDesign:ToggleButtonAssist.OnContent>
-                    <emoji:TextBlock Text="😴" />
+                    <emoji:TextBlock Text="🍅" />
                 </materialDesign:ToggleButtonAssist.OnContent>
             </ToggleButton>
 

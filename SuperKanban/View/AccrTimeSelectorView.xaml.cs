@@ -20,6 +20,15 @@ namespace SuperKanban.View
     /// 
     public partial class AccrTimeSelectorView : UserControl
     {
+        public Dictionary<LimitType, string> LimitTypedic = new Dictionary<LimitType, string>()
+
+            {
+                    {LimitType.Block,"  阻止"},
+                     
+                {LimitType.Limit,"  限制"},
+
+
+            };
         public SolidColorBrush CurrentBrush
         {
             get { return (SolidColorBrush)GetValue(CurrentBrushProperty); }
@@ -43,6 +52,7 @@ namespace SuperKanban.View
             
             CurrentType = LimitType.Block;
             InitializeComponent();
+            limittype_combobox.ItemsSource = LimitTypedic;
         }
         public AccrTimeSelectorViewModel ATSViewMoel{
             get { return DataContext as AccrTimeSelectorViewModel; } }

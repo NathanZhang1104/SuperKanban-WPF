@@ -17,6 +17,8 @@ using SuperKanban.View.Templates;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Serilog;
+using System.ComponentModel;
 
 namespace SuperKanban.View
 {
@@ -29,8 +31,6 @@ namespace SuperKanban.View
         {
             InitializeComponent();
             (DataContext as BoardViewModel).BoardWindow = this;
-            timer.Interval = TimeSpan.FromMilliseconds(10);
-            timer.Tick += new EventHandler(sortcol);  //你的事件
         }
         private void SfKanban_OnCardTapped(object sender, KanbanTappedEventArgs e)
         {
@@ -140,7 +140,6 @@ namespace SuperKanban.View
             carddrag = false;
 
         }
-        private DispatcherTimer timer = new DispatcherTimer();
 
         private void sfKanban_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -155,33 +154,20 @@ namespace SuperKanban.View
             {
                 var cur_col = new KanbanColumn() { Title = colitem.Title, Categories = colitem.Category };
                 sfKanban.Columns.Add(cur_col);
-
-
-
             }
-            timer.Start();
+            var collectionView = CollectionViewSource.GetDefaultView(sfKanban.ItemsSource);
+            collectionView.SortDescriptions.Clear();
+            collectionView.SortDescriptions.Add(new SortDescription(nameof(Card.Index), ListSortDirection.Ascending));
+            collectionView.Refresh();
+
 
         }
-        private void sortcol(object sender, EventArgs e)
+
+
+        private void sfKanban_CardDragLeave(object sender, KanbanDragLeaveEventArgs e)
         {
-            var boardViewModel = DataContext as BoardViewModel;
-
-            for (int i = 0; i < sfKanban.Columns.Count; i++)
-            {
-                for (int j = 0; j < sfKanban.Columns[i].Cards.Count; j++)
-                {
-
-                    sfKanban.Columns[i].Cards[j].Content = 
-                        boardViewModel.Board.Cards[boardViewModel.Board.BoardColumns[i].CardIndexList[j]];
-                }
-            }
-         
-           
-            timer.Stop();
-
+          ;
         }
-
-
-        }
+    }
     }
     

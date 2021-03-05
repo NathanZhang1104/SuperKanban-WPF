@@ -5,5 +5,17 @@
     <Setting Name="SelectBoardId" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="AutoRun" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Theme" Type="MaterialDesignThemes.Wpf.Theme" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SPKBTheme" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="设置1" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
